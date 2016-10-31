@@ -2,11 +2,15 @@
 
 #include <string>
 #include <sstream>
-#include <OpenGL.h>
+#include "OpenGL.h"
 
 #include "glassert.h"
 
 using namespace std;
+
+Mesh::Mesh()
+{
+}
 
 Mesh::Mesh(vector<Vertex> vertices, vector<GLuint> indices, vector<Texture> textures)
     : vertices(vertices), indices(indices), textures(textures), VAO(0), VBO(0), EBO(0)

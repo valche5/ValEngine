@@ -2,8 +2,8 @@
 #define GLWIDGET_H
 
 #include <qopenglwidget.h>
-#include <engine.h>
-#include <camera.h>
+#include "../core/engine.h"
+#include "../core/camera.h"
 
 class Camera;
 

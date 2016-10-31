@@ -5,10 +5,10 @@
 using std::cout;
 using std::endl;
 
-#include <openGL.h>
-#include <camera.h>
+#include "openGL.h"
+#include "camera.h"
 
-#include <Scene.h>
+#include "ModelLoader.h"
 
 Engine::Engine()
 {
@@ -41,7 +41,9 @@ void Engine::init()
 
 	m_lastFrameTime = std::chrono::high_resolution_clock::now();
 
-	m_scene = std::make_unique<Scene>();
+	//m_scene = std::move(ModelLoader::loadScene("data/sponza/sponza.obj"));;
+	m_scene = std::move(ModelLoader::loadScene("data/conference/conference.max"));;
+	cout << m_scene->toString() << endl;
 	m_camera = std::make_unique<Camera>(glm::vec3(0.f, 0.f, 3.0f));
 }
 
@@ -63,21 +65,21 @@ void Engine::paint()
 	glm::mat4 view = m_camera->GetViewMatrix();
 	glm::mat4 projection = glm::perspective(glm::radians(m_camera->m_zoom), 800.f / 600.f, 0.1f, 100.f);
 
-	//Rendu
-	Shader &lighting = m_scene->m_shaders["lighting"];
-	lighting.use();
-	
-	lighting.setUniform("view", view);
-	lighting.setUniform("projection", projection);
-	lighting.setUniform("viewPos", m_camera->m_position);
+	////Rendu
+	//Shader &lighting = m_scene->m_shaders["lighting"];
+	//lighting.use();
+	//
+	//lighting.setUniform("view", view);
+	//lighting.setUniform("projection", projection);
+	//lighting.setUniform("viewPos", m_camera->m_position);
 
-	int i = 0;
-	for (auto pointLight : m_scene->m_pointLights) {
-		pointLight.setUniforms(lighting, i);
-		i++;
-	}
+	//int i = 0;
+	//for (auto pointLight : m_scene->m_pointLights) {
+	//	pointLight.setUniforms(lighting, i);
+	//	i++;
+	//}
 
-	m_scene->m_models["nanosuit"].draw(lighting);
+	//m_scene->m_models["nanosuit"].draw(lighting);
 
 	//Shader &lamp = m_scene->m_shaders["lamp"];
 	//lamp.use();
@@ -105,10 +107,10 @@ Camera * Engine::camera()
 
 void Engine::reloadShaders()
 {
-	for (auto &shader : m_scene->m_shaders) {
-		cout << "Reload shader " << shader.first << endl;
-		shader.second.reload();
-	}
+	//for (auto &shader : m_scene->m_shaders) {
+	//	cout << "Reload shader " << shader.first << endl;
+	//	shader.second.reload();
+	//}
 }
 
 void Engine::setWireframe(bool enable)

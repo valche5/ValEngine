@@ -4,7 +4,7 @@
 #include <fstream>
 #include <sstream>
 
-#include <glassert.h>
+#include "glassert.h"
 
 Shader::Shader() {
 }

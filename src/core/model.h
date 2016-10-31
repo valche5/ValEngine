@@ -3,11 +3,12 @@
 
 #include "shader.h"
 #include "mesh.h"
+#include "SceneObject.h"
 
 #include <vector>
 #include <string>
 
-#include <OpenGL.h>
+#include "OpenGL.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -29,6 +30,7 @@ class Model
         /*  Model Data  */
         std::vector<Mesh> meshes;
         std::string directory;
+
         /*  Functions   */
         void loadModel(const std::string &path);
         void processNode(aiNode* node, const aiScene* scene);

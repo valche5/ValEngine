@@ -22,7 +22,10 @@ class Mesh {
         std::vector<Vertex> vertices;
         std::vector<GLuint> indices;
         std::vector<Texture> textures;
+
+		std::string name;
         /*  Functions  */
+		Mesh();
         Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, std::vector<Texture> textures);
         ~Mesh();
         void draw(Shader shader, const glm::mat4 &model = glm::mat4());

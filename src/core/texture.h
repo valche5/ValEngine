@@ -3,8 +3,8 @@
 
 #include <string>
 
-#include <OpenGL.h>
-#include <glassert.h>
+#include "OpenGL.h"
+#include "glassert.h"
 
 class Texture
 {

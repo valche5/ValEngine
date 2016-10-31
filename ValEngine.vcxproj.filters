@@ -62,12 +62,6 @@
     <ClCompile Include="src\gui\MainWindow.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_MainWindow.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_MainWindow.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="src\core\camera.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
@@ -89,6 +83,18 @@
     <ClCompile Include="src\core\Scene.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
+    <ClCompile Include="src\core\SceneObject.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\ModelLoader.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_MainWindow.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_MainWindow.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\gui\enginetest.qrc">
@@ -97,7 +103,7 @@
     <CustomBuild Include="src\gui\enginetest.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="include\gui\MainWindow.h">
+    <CustomBuild Include="src\gui\MainWindow.h">
       <Filter>Header Files\GUI</Filter>
     </CustomBuild>
   </ItemGroup>
@@ -105,41 +111,44 @@
     <ClInclude Include="GeneratedFiles\ui_enginetest.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\core\engine.h">
+    <ClInclude Include="src\core\camera.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="include\gui\GLWidget.h">
+    <ClInclude Include="src\core\engine.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\glassert.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\Light.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\mesh.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\model.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\ModelLoader.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\openGL.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\Scene.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\SceneObject.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\shader.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\texture.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gui\GLWidget.h">
       <Filter>Header Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="include\core\openGL.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="include\core\camera.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="include\core\cube.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="include\core\glassert.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="include\core\mesh.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="include\core\model.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="include\core\shader.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="include\core\texture.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="include\core\Scene.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="include\core\Light.h">
-      <Filter>Header Files\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
