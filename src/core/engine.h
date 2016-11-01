@@ -32,8 +32,8 @@ private:
 
 	timepoint m_lastFrameTime;
 
-	std::unique_ptr<Camera> m_camera;
 	std::unique_ptr<Scene> m_scene;
+	Camera *m_camera;
 };
 
 #endif // !ENGINE_H

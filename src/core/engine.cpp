@@ -20,6 +20,7 @@ Engine::~Engine()
 
 void Engine::init()
 {
+	glewExperimental = GL_TRUE;
 	GLenum err = glewInit();
 	if (err != GLEW_OK) {
 		cout << "glew\t\tErreur" << endl;
@@ -41,10 +42,26 @@ void Engine::init()
 
 	m_lastFrameTime = std::chrono::high_resolution_clock::now();
 
-	//m_scene = std::move(ModelLoader::loadScene("data/sponza/sponza.obj"));;
-	m_scene = std::move(ModelLoader::loadScene("data/conference/conference.max"));;
+	m_scene = std::move(ModelLoader::loadScene("data/car/sportsCar.obj"));
+	//m_scene->getRootObject()->translate(glm::vec3(0, -1.75, 0));
+	m_scene->getRootObject()->scale(glm::vec3(0.5));
+
 	cout << m_scene->toString() << endl;
-	m_camera = std::make_unique<Camera>(glm::vec3(0.f, 0.f, 3.0f));
+
+	m_camera = m_scene->getCamera();
+	m_camera->m_screenRatio = 800.f / 600.f;
+
+	//m_scene->dirLights.push_back(DirLight());
+	PointLight light(glm::vec3(0.58, -2.74, 0.033));
+	//light.constant = 1;
+	//light.linear = 0;
+	//light.quadratic = 0;
+	m_scene->pointLights.push_back(light);
+
+	SpotLight slight;
+	m_scene->spotLights.push_back(slight);
+
+	m_scene->init();
 }
 
 void Engine::paint()
@@ -61,34 +78,7 @@ void Engine::paint()
 	//Mise à jour caméra
 	m_camera->update(dt/1000);
 	
-	//Mise à jour de la vue
-	glm::mat4 view = m_camera->GetViewMatrix();
-	glm::mat4 projection = glm::perspective(glm::radians(m_camera->m_zoom), 800.f / 600.f, 0.1f, 100.f);
-
-	////Rendu
-	//Shader &lighting = m_scene->m_shaders["lighting"];
-	//lighting.use();
-	//
-	//lighting.setUniform("view", view);
-	//lighting.setUniform("projection", projection);
-	//lighting.setUniform("viewPos", m_camera->m_position);
-
-	//int i = 0;
-	//for (auto pointLight : m_scene->m_pointLights) {
-	//	pointLight.setUniforms(lighting, i);
-	//	i++;
-	//}
-
-	//m_scene->m_models["nanosuit"].draw(lighting);
-
-	//Shader &lamp = m_scene->m_shaders["lamp"];
-	//lamp.use();
-
-	//lamp.setUniform("lampColor", m_scene->m_pointLights[0].diffuse);
-	//m_scene->m_models["cube0"].draw(lamp);
-
-	//lamp.setUniform("lampColor", m_scene->m_pointLights[1].diffuse);
-	//m_scene->m_models["cube1"].draw(lamp);
+	m_scene->render();
 }
 
 void Engine::resize(int w, int h)
@@ -102,15 +92,12 @@ void Engine::clean()
 
 Camera * Engine::camera()
 {
-	return m_camera.get();
+	return m_camera;
 }
 
 void Engine::reloadShaders()
 {
-	//for (auto &shader : m_scene->m_shaders) {
-	//	cout << "Reload shader " << shader.first << endl;
-	//	shader.second.reload();
-	//}
+	m_scene->reloadShaders();
 }
 
 void Engine::setWireframe(bool enable)

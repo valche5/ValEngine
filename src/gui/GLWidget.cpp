@@ -137,7 +137,7 @@ void GLWidget::mouseMoveEvent(QMouseEvent *e) {
 }
 
 void GLWidget::wheelEvent(QWheelEvent *e) {
-	m_camera->ProcessMouseScroll(e->delta());
+	m_camera->processMouseScroll(e->delta());
 }
 
 void GLWidget::resizeEvent(QResizeEvent *e) {

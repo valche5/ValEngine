@@ -162,8 +162,8 @@
     <ClCompile Include="src\core\camera.cpp" />
     <ClCompile Include="src\core\engine.cpp" />
     <ClCompile Include="src\core\mesh.cpp" />
-    <ClCompile Include="src\core\model.cpp" />
     <ClCompile Include="src\core\ModelLoader.cpp" />
+    <ClCompile Include="src\core\PhongShader.cpp" />
     <ClCompile Include="src\core\Scene.cpp" />
     <ClCompile Include="src\core\SceneObject.cpp" />
     <ClCompile Include="src\core\shader.cpp" />
@@ -214,14 +214,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_enginetest.h" />
+    <ClInclude Include="ShaderConfiguration.h" />
     <ClInclude Include="src\core\camera.h" />
     <ClInclude Include="src\core\engine.h" />
     <ClInclude Include="src\core\glassert.h" />
     <ClInclude Include="src\core\Light.h" />
+    <ClInclude Include="src\core\Material.h" />
     <ClInclude Include="src\core\mesh.h" />
-    <ClInclude Include="src\core\model.h" />
     <ClInclude Include="src\core\ModelLoader.h" />
     <ClInclude Include="src\core\openGL.h" />
+    <ClInclude Include="src\core\PhongShader.h" />
     <ClInclude Include="src\core\Scene.h" />
     <ClInclude Include="src\core\SceneObject.h" />
     <ClInclude Include="src\core\shader.h" />
@@ -249,12 +251,15 @@
   <ItemGroup>
     <None Include="shaders\base.frag" />
     <None Include="shaders\base.vert" />
+    <None Include="shaders\baseStruct.frag" />
     <None Include="shaders\lamp.frag" />
     <None Include="shaders\lamp.vert" />
     <None Include="shaders\lighting.frag" />
     <None Include="shaders\lighting.vert" />
     <None Include="shaders\lighting_maps.frag" />
     <None Include="shaders\lighting_maps.vert" />
+    <None Include="shaders\phong.frag" />
+    <None Include="shaders\proto.frag" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

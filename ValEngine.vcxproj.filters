@@ -68,9 +68,6 @@
     <ClCompile Include="src\core\mesh.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\core\model.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
     <ClCompile Include="src\core\shader.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
@@ -94,6 +91,9 @@
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_MainWindow.cpp">
       <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\PhongShader.cpp">
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -126,9 +126,6 @@
     <ClInclude Include="src\core\mesh.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\model.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
     <ClInclude Include="src\core\ModelLoader.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
@@ -149,6 +146,15 @@
     </ClInclude>
     <ClInclude Include="src\gui\GLWidget.h">
       <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\Material.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\PhongShader.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderConfiguration.h">
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -174,6 +180,15 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="shaders\lighting_maps.vert">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\proto.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\baseStruct.frag">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="shaders\phong.frag">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

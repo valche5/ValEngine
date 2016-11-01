@@ -10,13 +10,13 @@ Shader::Shader() {
 }
 
 Shader::~Shader() {
-	glDeleteProgram(program);
+	//glDeleteProgram(m_program);
 }
 
-void Shader::load(char const *vertexPath, char const *fragmentPath, const std::vector<std::string> &defines) {
+void Shader::load(const std::string &vertexPath, const std::vector<std::string> &fragmentPaths, const std::vector<std::string> &defines) {
 	m_defines = defines;
 	m_vertexPath = vertexPath;
-	m_fragmentPath = fragmentPath;
+	m_fragmentPaths = fragmentPaths;
 	load();
 }
 
@@ -30,13 +30,18 @@ void Shader::load()
 	vShaderFile.exceptions(std::ifstream::badbit);
 	fShaderFile.exceptions(std::ifstream::badbit);
 	try {
-		vShaderFile.open(m_vertexPath);
-		fShaderFile.open(m_fragmentPath);
 		std::stringstream vShaderStream, fShaderStream;
+
+		vShaderFile.open(directory + m_vertexPath);
 		vShaderStream << vShaderFile.rdbuf();
-		fShaderStream << fShaderFile.rdbuf();
 		vShaderFile.close();
-		fShaderFile.close();
+
+		for (auto fragmentPath : m_fragmentPaths) {
+			fShaderFile.open(directory + fragmentPath);
+			fShaderStream << fShaderFile.rdbuf();
+			fShaderFile.close();
+		}
+
 		vertexCode = vShaderStream.str();
 		fragmentCode = fShaderStream.str();
 
@@ -82,14 +87,14 @@ void Shader::load()
 	}
 
 	// Shader Program
-	glAssert(program = glCreateProgram());
-	glAssert(glAttachShader(program, vertex));
-	glAssert(glAttachShader(program, fragment));
-	glAssert(glLinkProgram(program));
+	glAssert(m_program = glCreateProgram());
+	glAssert(glAttachShader(m_program, vertex));
+	glAssert(glAttachShader(m_program, fragment));
+	glAssert(glLinkProgram(m_program));
 	// Errors
-	glAssert(glGetProgramiv(program, GL_LINK_STATUS, &success));
+	glAssert(glGetProgramiv(m_program, GL_LINK_STATUS, &success));
 	if (!success) {
-		glAssert(glGetProgramInfoLog(program, 512, NULL, infoLog));
+		glAssert(glGetProgramInfoLog(m_program, 512, NULL, infoLog));
 		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
 	}
 
@@ -100,35 +105,35 @@ void Shader::load()
 
 void Shader::reload()
 {
-	glAssert(glDeleteProgram(program));
+	glAssert(glDeleteProgram(m_program));
     load();
 }
 
-void Shader::use() {
-	glAssert(glUseProgram(program));
+void Shader::use() const {
+	glAssert(glUseProgram(m_program));
 }
 
-void Shader::setUniform(const std::string &loc, glm::vec3 u3f)
+void Shader::setUniform(GLuint loc, glm::vec3 u3f) const
 {
-	glAssert(glUniform3f(glGetUniformLocation(program, loc.c_str()), u3f.x, u3f.y, u3f.z));
+	glUniform3f(loc, u3f.x, u3f.y, u3f.z);
 }
 
-void Shader::setUniform(const std::string & loc, glm::mat3 um3fv)
+void Shader::setUniform(GLuint loc, glm::mat3 um3fv) const
 {
-	glAssert(glUniformMatrix3fv(glGetUniformLocation(program, loc.c_str()), 1, GL_FALSE, glm::value_ptr(um3fv)));
+	glUniformMatrix3fv(loc, 1, GL_FALSE, glm::value_ptr(um3fv));
 }
 
-void Shader::setUniform(const std::string &loc, glm::mat4 um4fv)
+void Shader::setUniform(GLuint loc, glm::mat4 um4fv) const
 {
-	glAssert(glUniformMatrix4fv(glGetUniformLocation(program, loc.c_str()), 1, GL_FALSE, glm::value_ptr(um4fv)));
+	glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(um4fv));
 }
 
-void Shader::setUniform(const std::string &loc, GLfloat u1f)
+void Shader::setUniform(GLuint loc, GLfloat u1f) const
 {
-	glAssert(glUniform1f(glGetUniformLocation(program, loc.c_str()), u1f));
+	glUniform1f(loc, u1f);
 }
 
-void Shader::setUniform(const std::string &loc, GLuint u1i)
+void Shader::setUniform(GLuint loc, GLuint u1i) const
 {
-	glAssert(glUniform1i(glGetUniformLocation(program, loc.c_str()), u1i));
+	glUniform1i(loc, u1i);
 }

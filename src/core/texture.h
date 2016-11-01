@@ -10,6 +10,7 @@ class Texture
 {
 public:
     Texture();
+	~Texture();
     void load(const std::string &path,
               GLenum min_filter = GL_LINEAR,
               GLenum mag_filter = GL_LINEAR,

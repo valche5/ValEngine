@@ -24,9 +24,13 @@ Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float u
 }
 
 // Returns the view matrix calculated using Eular Angles and the LookAt Matrix
-glm::mat4 Camera::GetViewMatrix()
+glm::mat4 Camera::getViewMatrix() const
 {
     return glm::lookAt(m_position, m_position + m_front, m_up);
+}
+
+glm::mat4 Camera::getProjection() const {
+	return glm::perspective(glm::radians(m_zoom), m_screenRatio, m_near, m_far);
 }
 
 void Camera::update(float dt)
@@ -195,21 +199,18 @@ void Camera::processMouseMove(int mouseX, int mouseY)
 	m_mouseLastPos = mousePos;
 }
 
-void Camera::setMouseOffsetBufferSize(size_t size)
-{
-	m_bufferSize = size;
-	initOffsetBuffer();
+void Camera::processMouseScroll(float yoffset) {
+	if (m_zoom >= 1.0f && m_zoom <= 45.0f)
+		m_zoom -= yoffset * 0.1;
+	if (m_zoom <= 1.0f)
+		m_zoom = 1.0f;
+	if (m_zoom >= 45.0f)
+		m_zoom = 45.0f;
 }
 
-// Processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
-void Camera::ProcessMouseScroll(float yoffset)
-{
-    if (m_zoom >= 1.0f && m_zoom <= 45.0f)
-        m_zoom -= yoffset * 0.1;
-    if (m_zoom <= 1.0f)
-        m_zoom = 1.0f;
-    if (m_zoom >= 45.0f)
-        m_zoom = 45.0f;
+void Camera::setMouseOffsetBufferSize(size_t size) {
+	m_bufferSize = size;
+	initOffsetBuffer();
 }
 
 // Calculates the front vector from the Camera's (updated) Eular Angles

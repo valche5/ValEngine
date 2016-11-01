@@ -2,9 +2,14 @@
 #define CAMERA_H
 
 #include <vector>
+#include <memory>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
+class Camera;
+
+typedef std::unique_ptr<Camera> CameraPtr;
 
 // Default camera values
 const float YAW        = -90.0f;
@@ -48,6 +53,9 @@ public:
     glm::vec3 m_up;
     glm::vec3 m_right;
     glm::vec3 m_worldUp;
+	float m_screenRatio = 800.f / 600.f;
+	float m_near = 0.1;
+	float m_far = 100;
     // Eular Angles
     float m_yaw;
     float m_pitch;
@@ -63,7 +71,10 @@ public:
     Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);
 
     // Returns the view matrix calculated using Eular Angles and the LookAt Matrix
-    glm::mat4 GetViewMatrix();
+    glm::mat4 getViewMatrix() const;
+	// Returns the projection matrix
+	glm::mat4 getProjection() const;
+
     void update(float dt);
 
     void processKeyPress(Key key);
@@ -71,12 +82,9 @@ public:
 	void processMousePress(int mouseX, int mouseY);
 	void processMouseRelease();
 	void processMouseMove(int mouseX, int mouseY);
+	void processMouseScroll(float yoffset);
 
 	void setMouseOffsetBufferSize(size_t size);
-
-    // Processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
-    void ProcessMouseScroll(float yoffset);
-
 private:
     // Calculates the front vector from the Camera's (updated) Eular Angles
     void updateCameraVectors();

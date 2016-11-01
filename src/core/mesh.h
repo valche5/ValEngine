@@ -3,8 +3,8 @@
 
 #include <vector>
 
-#include "shader.h"
 #include "texture.h"
+#include "Material.h"
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -17,23 +17,25 @@ struct Vertex {
 };
 
 class Mesh {
-    public:
-        /*  Mesh Data  */
-        std::vector<Vertex> vertices;
-        std::vector<GLuint> indices;
-        std::vector<Texture> textures;
+public:
+	Mesh();
+	Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, std::vector<Texture> textures);
+	~Mesh();
+	void draw();
+	void setupMesh();
+public:
+    /*  Mesh Data  */
+    std::vector<Vertex> vertices;
+    std::vector<GLuint> indices;
+    std::vector<Texture> textures;
+	std::string name;
+	std::string shading;
 
-		std::string name;
-        /*  Functions  */
-		Mesh();
-        Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, std::vector<Texture> textures);
-        ~Mesh();
-        void draw(Shader shader, const glm::mat4 &model = glm::mat4());
-    private:
-        /*  Render data  */
-        GLuint VAO, VBO, EBO;
-        /*  Functions    */
-        void setupMesh();
+	//Material
+	Material material;
+private:
+    //Render
+    GLuint VAO, VBO, EBO;
 };
 
 #endif // MESH_H

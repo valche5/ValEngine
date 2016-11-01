@@ -9,6 +9,10 @@ Texture::Texture()
 {
 }
 
+Texture::~Texture()
+{
+}
+
 void Texture::load(const string &path, GLenum min_filter, GLenum mag_filter, GLenum wrap_s, GLenum wrap_t)
 {
     const char *image_path = path.c_str();

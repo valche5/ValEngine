@@ -3,9 +3,41 @@
 
 #include <string>
 #include <vector>
-#include "OpenGL.h"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include "OpenGL.h"
+
+struct uPointLight {
+	GLuint position;
+	GLuint constant;
+	GLuint linear;
+	GLuint quadratic;
+	GLuint ambient;
+	GLuint diffuse;
+	GLuint specular;
+};
+
+struct uDirLight {
+	GLuint direction;
+	GLuint ambient;
+	GLuint diffuse;
+	GLuint specular;
+};
+
+struct uSpotLight {
+	GLuint position;
+	GLuint direction;
+	GLuint cutOff;
+	GLuint outerCutOff;
+	GLuint constant;
+	GLuint linear;
+	GLuint quadratic;
+	GLuint ambient;
+	GLuint diffuse;
+	GLuint specular;
+};
 
 class Shader
 {
@@ -13,25 +45,32 @@ public:
     Shader();
     ~Shader();
 
-    void load(const char *vertexPath, const char *fragmentPath, const std::vector<std::string> &defines = std::vector<std::string>());
+	void load(const std::string &vertexPath, const std::vector<std::string> &fragmentPaths, const std::vector<std::string> &defines = std::vector<std::string>());
     void reload();
-    void use();
+    void use() const;
 
-	void setUniform(const std::string &loc, glm::vec3 u3f);
-	void setUniform(const std::string &loc, glm::mat3 um3fv);
-	void setUniform(const std::string &loc, glm::mat4 um4fv);
-	void setUniform(const std::string &loc, GLfloat u1f);
-	void setUniform(const std::string &loc, GLuint u1i);
+	template<typename T>
+	void setUniform(const std::string &loc, T value) const {
+		setUniform(glGetUniformLocation(m_program, loc.c_str()), value);
+	};
 
-    operator GLuint() { return program; }
+	void setUniform(GLuint loc, glm::vec3 u3f) const;
+	void setUniform(GLuint loc, glm::mat3 um3fv) const;
+	void setUniform(GLuint loc, glm::mat4 um4fv) const;
+	void setUniform(GLuint loc, GLfloat u1f) const;
+	void setUniform(GLuint loc, GLuint u1i) const;
 
-    GLuint program;
+    operator GLuint() { return m_program; }
 
-private:
+protected:
 	void load();
 
-    const char *m_vertexPath;
-    const char *m_fragmentPath;
+protected:
+	GLuint m_program;
+
+	std::string directory = "shaders/";
+	std::string m_vertexPath;
+	std::vector<std::string> m_fragmentPaths;
 
 	std::vector<std::string> m_defines;
 };
