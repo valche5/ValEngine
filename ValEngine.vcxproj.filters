@@ -48,6 +48,12 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{b3e27ccf-c47b-490f-b6e3-8b071877b004}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Utils">
+      <UniqueIdentifier>{1bf6fbd0-e3ea-4b39-bb41-f0ba649c29e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utils">
+      <UniqueIdentifier>{e9522131-42a5-47de-94e1-ec6af8feea8a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\gui\main.cpp">
@@ -56,23 +62,8 @@
     <ClCompile Include="GeneratedFiles\qrc_enginetest.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\core\engine.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
     <ClCompile Include="src\gui\MainWindow.cpp">
       <Filter>Source Files\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\camera.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\mesh.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\shader.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\texture.cpp">
-      <Filter>Source Files\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\gui\GLWidget.cpp">
       <Filter>Source Files\GUI</Filter>
@@ -92,8 +83,26 @@
     <ClCompile Include="GeneratedFiles\Release\moc_MainWindow.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="src\core\PhongShader.cpp">
+    <ClCompile Include="src\core\Texture.cpp">
       <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\Mesh.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\Engine.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\Camera.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\ShaderProgramGL.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\Shader.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utils\File.cpp">
+      <Filter>Source Files\Utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -111,19 +120,10 @@
     <ClInclude Include="GeneratedFiles\ui_enginetest.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\camera.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\engine.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
     <ClInclude Include="src\core\glassert.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\core\Light.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\mesh.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\core\ModelLoader.h">
@@ -138,23 +138,41 @@
     <ClInclude Include="src\core\SceneObject.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\shader.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\texture.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
     <ClInclude Include="src\gui\GLWidget.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
     <ClInclude Include="src\core\Material.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\PhongShader.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
     <ClInclude Include="ShaderConfiguration.h">
       <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\Mesh.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\Engine.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\Camera.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\Texture.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\File.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\ShaderProgramGL.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\Shader.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\debugMessage.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\Arrow.h">
+      <Filter>Header Files\Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -164,10 +182,10 @@
     <None Include="shaders\base.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="shaders\lamp.frag">
+    <None Include="shaders\lighting_maps.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="shaders\lamp.vert">
+    <None Include="shaders\phong.frag">
       <Filter>Shaders</Filter>
     </None>
     <None Include="shaders\lighting.frag">
@@ -176,19 +194,10 @@
     <None Include="shaders\lighting.vert">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="shaders\lighting_maps.frag">
+    <None Include="shaders\fill.frag">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="shaders\lighting_maps.vert">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="shaders\proto.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="shaders\baseStruct.frag">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="shaders\phong.frag">
+    <None Include="shaders\fill.vert">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

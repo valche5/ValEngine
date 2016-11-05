@@ -1,13 +1,58 @@
-#ifndef SHADER_H
-#define SHADER_H
+#ifndef PHONGSHADER_H
+#define PHONGSHADER_H
 
-#include <string>
 #include <vector>
 
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include "ShaderProgramGL.h"
+#include "ShaderConfiguration.h"
+#include "camera.h"
+#include "Light.h"
+#include "Material.h"
 
-#include "OpenGL.h"
+class MeshShader {
+public:
+	MeshShader(const ShaderConfiguration &configuration)
+		: m_configuration(configuration), m_vertex(new ShaderGL(ShaderType::Vertex))
+		, m_fragment(new ShaderGL(ShaderType::Fragment))
+	{}
+	virtual ~MeshShader() {};
+
+	void init() {
+		m_program.attach(m_vertex);
+		m_program.attach(m_fragment);
+		load();
+		m_program.compile();
+		fillUniformsLoc();
+	};
+
+	virtual void setUniforms(const Camera &camera) const = 0;
+	virtual void setUniforms(const glm::mat4 &model) const = 0;
+	virtual void setUniforms(const Material &mat) const = 0;
+	virtual void setUniforms(const std::vector<PointLight> &pLights) const = 0;
+	virtual void setUniforms(const std::vector<DirLight> &dLights) const = 0;
+	virtual void setUniforms(const std::vector<SpotLight> &sLights) const = 0;
+
+	void use() const { m_program.use(); };
+	void reload() const { m_program.compile(); };
+
+	ShaderConfiguration configuration() const {
+		return m_configuration;
+	}
+protected:
+	virtual void load() = 0;
+	virtual void fillUniformsLoc() = 0;
+
+protected:
+	//ShaderProgram
+	ShaderProgramGL m_program;
+	ShaderGLPtr m_vertex;
+	ShaderGLPtr m_fragment;
+
+	//Configuration
+	ShaderConfiguration m_configuration;
+};
+
+typedef std::unique_ptr<MeshShader> MeshShaderPtr;
 
 struct uPointLight {
 	GLuint position;
@@ -39,41 +84,41 @@ struct uSpotLight {
 	GLuint specular;
 };
 
-class Shader
-{
+class LightingShader : public MeshShader {
 public:
-    Shader();
-    ~Shader();
+	LightingShader(const ShaderConfiguration &conf)
+		: MeshShader(conf) {};
 
-	void load(const std::string &vertexPath, const std::vector<std::string> &fragmentPaths, const std::vector<std::string> &defines = std::vector<std::string>());
-    void reload();
-    void use() const;
-
-	template<typename T>
-	void setUniform(const std::string &loc, T value) const {
-		setUniform(glGetUniformLocation(m_program, loc.c_str()), value);
-	};
-
-	void setUniform(GLuint loc, glm::vec3 u3f) const;
-	void setUniform(GLuint loc, glm::mat3 um3fv) const;
-	void setUniform(GLuint loc, glm::mat4 um4fv) const;
-	void setUniform(GLuint loc, GLfloat u1f) const;
-	void setUniform(GLuint loc, GLuint u1i) const;
-
-    operator GLuint() { return m_program; }
-
+	virtual void setUniforms(const Camera &camera) const;
+	virtual void setUniforms(const glm::mat4 &model) const;
+	virtual void setUniforms(const Material &mat) const;
+	virtual void setUniforms(const std::vector<PointLight> &pLights) const;
+	virtual void setUniforms(const std::vector<DirLight> &dLights) const;
+	virtual void setUniforms(const std::vector<SpotLight> &sLights) const;
 protected:
-	void load();
+	virtual void load();
+	virtual void fillUniformsLoc();
 
-protected:
-	GLuint m_program;
+private:
+	//Vertex Shader
+	GLuint m_uModel;
+	GLuint m_uNormalModel;
+	GLuint m_uView;
+	GLuint m_uProjection;
 
-	std::string directory = "shaders/";
-	std::string m_vertexPath;
-	std::vector<std::string> m_fragmentPaths;
+	//Fragment Shader : Material
+	GLuint m_uKa;
+	GLuint m_uKd;
+	GLuint m_uKs;
+	GLuint m_uShininess;
 
-	std::vector<std::string> m_defines;
+	//Fragment Shader : Lights
+	std::vector<uPointLight> m_uPointLights;
+	std::vector<uDirLight> m_uDirLights;
+	std::vector<uSpotLight> m_uSpotLights;
+
+	//Fragment Shader : View
+	GLuint m_uViewPos;
 };
 
-#endif // SHADER
-
+#endif // PHONGSHADER_H

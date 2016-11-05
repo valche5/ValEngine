@@ -106,6 +106,8 @@
       <AdditionalLibraryDirectories>$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>qtmaind.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Helpd.lib;Qt5OpenGLd.lib;opengl32.lib;glu32.lib;Qt5Widgetsd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>LIBCMT;MSVCRT</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -159,18 +161,19 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="src\core\camera.cpp" />
-    <ClCompile Include="src\core\engine.cpp" />
-    <ClCompile Include="src\core\mesh.cpp" />
+    <ClCompile Include="src\core\Camera.cpp" />
+    <ClCompile Include="src\core\Engine.cpp" />
+    <ClCompile Include="src\core\Mesh.cpp" />
     <ClCompile Include="src\core\ModelLoader.cpp" />
-    <ClCompile Include="src\core\PhongShader.cpp" />
+    <ClCompile Include="src\core\Shader.cpp" />
     <ClCompile Include="src\core\Scene.cpp" />
     <ClCompile Include="src\core\SceneObject.cpp" />
-    <ClCompile Include="src\core\shader.cpp" />
-    <ClCompile Include="src\core\texture.cpp" />
+    <ClCompile Include="src\core\ShaderProgramGL.cpp" />
+    <ClCompile Include="src\core\Texture.cpp" />
     <ClCompile Include="src\gui\GLWidget.cpp" />
     <ClCompile Include="src\gui\MainWindow.cpp" />
     <ClCompile Include="src\gui\main.cpp" />
+    <ClCompile Include="src\utils\File.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\gui\enginetest.qrc">
@@ -215,20 +218,23 @@
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_enginetest.h" />
     <ClInclude Include="ShaderConfiguration.h" />
-    <ClInclude Include="src\core\camera.h" />
-    <ClInclude Include="src\core\engine.h" />
+    <ClInclude Include="src\core\Camera.h" />
+    <ClInclude Include="src\core\Engine.h" />
     <ClInclude Include="src\core\glassert.h" />
     <ClInclude Include="src\core\Light.h" />
     <ClInclude Include="src\core\Material.h" />
-    <ClInclude Include="src\core\mesh.h" />
+    <ClInclude Include="src\core\Mesh.h" />
     <ClInclude Include="src\core\ModelLoader.h" />
     <ClInclude Include="src\core\openGL.h" />
-    <ClInclude Include="src\core\PhongShader.h" />
+    <ClInclude Include="src\core\Shader.h" />
     <ClInclude Include="src\core\Scene.h" />
     <ClInclude Include="src\core\SceneObject.h" />
-    <ClInclude Include="src\core\shader.h" />
-    <ClInclude Include="src\core\texture.h" />
+    <ClInclude Include="src\core\ShaderProgramGL.h" />
+    <ClInclude Include="src\core\Texture.h" />
     <ClInclude Include="src\gui\GLWidget.h" />
+    <ClInclude Include="src\utils\Arrow.h" />
+    <ClInclude Include="src\utils\debugMessage.h" />
+    <ClInclude Include="src\utils\File.h" />
     <CustomBuild Include="src\gui\MainWindow.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing MainWindow.h...</Message>
@@ -251,15 +257,12 @@
   <ItemGroup>
     <None Include="shaders\base.frag" />
     <None Include="shaders\base.vert" />
-    <None Include="shaders\baseStruct.frag" />
-    <None Include="shaders\lamp.frag" />
-    <None Include="shaders\lamp.vert" />
     <None Include="shaders\lighting.frag" />
-    <None Include="shaders\lighting.vert" />
+    <None Include="shaders\fill.frag" />
+    <None Include="shaders\fill.vert" />
     <None Include="shaders\lighting_maps.frag" />
-    <None Include="shaders\lighting_maps.vert" />
+    <None Include="shaders\lighting.vert" />
     <None Include="shaders\phong.frag" />
-    <None Include="shaders\proto.frag" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

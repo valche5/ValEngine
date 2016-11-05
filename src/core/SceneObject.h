@@ -9,7 +9,7 @@
 #include <glm/glm.hpp>
 #include <glm/matrix.hpp>
 
-#include "mesh.h"
+#include "Mesh.h"
 #include "Material.h"
 
 class SceneObject;
@@ -54,7 +54,7 @@ public:
 				<< "ks(" << mat.ks.r << "," << mat.ks.g << "," << mat.ks.b << ") "
 				<< std::endl;
 			for (auto &tex : mat.textures) 
-				result << space << "  -Texture (" << mat.textureTypeString(tex.first) + ") " << tex.second << std::endl;
+				result << space << "  -Texture (" << textureTypeString.at(tex.first) + ") " << tex.second << std::endl;
 		}
 
 		for (auto &child : childs) {

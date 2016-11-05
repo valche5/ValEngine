@@ -1,4 +1,4 @@
-#include "mesh.h"
+#include "Mesh.h"
 
 #include <string>
 #include <sstream>
@@ -9,19 +9,14 @@
 using namespace std;
 
 Mesh::Mesh()
+	: VAO(0), VBO(0), EBO(0)
 {
-}
-
-Mesh::Mesh(vector<Vertex> vertices, vector<GLuint> indices, vector<Texture> textures)
-    : vertices(vertices), indices(indices), textures(textures), VAO(0), VBO(0), EBO(0)
-{
-    setupMesh();
 }
 
 Mesh::~Mesh()
 {
-    //glDeleteVertexArrays(1, &VAO);
-    //glDeleteBuffers(1, &VBO);
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
 }
 
 void Mesh::draw()

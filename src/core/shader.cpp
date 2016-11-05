@@ -1,139 +1,200 @@
-#include "shader.h"
+#include "Shader.h"
 
-#include <iostream>
-#include <fstream>
-#include <sstream>
+#include "Scene.h"
 
-#include "glassert.h"
-
-Shader::Shader() {
+void LightingShader::setUniforms(const Camera &camera) const {
+	m_program.setUniform(m_uView, camera.getViewMatrix());
+	m_program.setUniform(m_uProjection, camera.getProjection());
+	m_program.setUniform(m_uViewPos, camera.m_position);
 }
 
-Shader::~Shader() {
-	//glDeleteProgram(m_program);
+void LightingShader::setUniforms(const glm::mat4 & model) const {
+	m_program.setUniform(m_uModel, model);
+	m_program.setUniform(m_uNormalModel, glm::mat3(glm::transpose(glm::inverse(model))));
 }
 
-void Shader::load(const std::string &vertexPath, const std::vector<std::string> &fragmentPaths, const std::vector<std::string> &defines) {
-	m_defines = defines;
-	m_vertexPath = vertexPath;
-	m_fragmentPaths = fragmentPaths;
-	load();
-}
-
-void Shader::load()
-{
-	std::string vertexCode;
-	std::string fragmentCode;
-	std::ifstream vShaderFile;
-	std::ifstream fShaderFile;
-
-	vShaderFile.exceptions(std::ifstream::badbit);
-	fShaderFile.exceptions(std::ifstream::badbit);
-	try {
-		std::stringstream vShaderStream, fShaderStream;
-
-		vShaderFile.open(directory + m_vertexPath);
-		vShaderStream << vShaderFile.rdbuf();
-		vShaderFile.close();
-
-		for (auto fragmentPath : m_fragmentPaths) {
-			fShaderFile.open(directory + fragmentPath);
-			fShaderStream << fShaderFile.rdbuf();
-			fShaderFile.close();
-		}
-
-		vertexCode = vShaderStream.str();
-		fragmentCode = fShaderStream.str();
-
-	} catch (std::ifstream::failure e) {
-		std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULY_READ" << std::endl;
+void LightingShader::setUniforms(const Material &mat) const {
+	GLuint textureCount = 0;
+	if (m_configuration.textureTypes & Ambient) {
+		glActiveTexture(GL_TEXTURE0 + textureCount);
+		m_program.setUniform(m_uKa, textureCount);
+		Texture &tex = mat.scene->textures[mat.textures.at(Ambient)];
+		tex.bind();
+		textureCount++;
+	} else {
+		m_program.setUniform(m_uKa, mat.ka);
 	}
 
-	for (auto define : m_defines) {
-		fragmentCode = "#define " + define + "\n" + fragmentCode;
-	}
-	fragmentCode = "#version 330 core\n" + fragmentCode;
-
-	const char * vShaderCode = vertexCode.c_str();
-	const char * fShaderCode = fragmentCode.c_str();
-
-	// Vertex Shader
-	GLint vertex = glCreateShader(GL_VERTEX_SHADER);
-	glAssert(glShaderSource(vertex, 1, &vShaderCode, NULL));
-
-	// Fragment Shader
-	GLuint fragment = glCreateShader(GL_FRAGMENT_SHADER);
-	glAssert(glShaderSource(fragment, 1, &fShaderCode, NULL));
-
-	GLint success;
-	GLchar infoLog[512];
-
-	// Vertex Shader
-	glAssert(glCompileShader(vertex));
-	// Errors
-	glAssert(glGetShaderiv(vertex, GL_COMPILE_STATUS, &success));
-	if (!success) {
-		glAssert(glGetShaderInfoLog(vertex, 512, NULL, infoLog));
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+	if (m_configuration.textureTypes & Diffuse) {
+		glActiveTexture(GL_TEXTURE0 + textureCount);
+		m_program.setUniform(m_uKd, textureCount);
+		Texture &tex = mat.scene->textures[mat.textures.at(Diffuse)];
+		tex.bind();
+		textureCount++;
+	} else {
+		m_program.setUniform(m_uKd, mat.kd);
 	}
 
-	// Fragment Shader
-	glAssert(glCompileShader(fragment));
-	// Errors
-	glAssert(glGetShaderiv(fragment, GL_COMPILE_STATUS, &success));
-	if (!success) {
-		glAssert(glGetShaderInfoLog(fragment, 512, NULL, infoLog));
-		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+	if (m_configuration.textureTypes & Specular) {
+		glActiveTexture(GL_TEXTURE0 + textureCount);
+		m_program.setUniform(m_uKs, textureCount);
+		Texture &tex = mat.scene->textures[mat.textures.at(Specular)];
+		tex.bind();
+		textureCount++;
+	} else {
+		m_program.setUniform(m_uKs, mat.ks);
 	}
 
-	// Shader Program
-	glAssert(m_program = glCreateProgram());
-	glAssert(glAttachShader(m_program, vertex));
-	glAssert(glAttachShader(m_program, fragment));
-	glAssert(glLinkProgram(m_program));
-	// Errors
-	glAssert(glGetProgramiv(m_program, GL_LINK_STATUS, &success));
-	if (!success) {
-		glAssert(glGetProgramInfoLog(m_program, 512, NULL, infoLog));
-		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+	if (textureCount > 0) {
+		glActiveTexture(GL_TEXTURE0);
 	}
 
-	// Delete the shaders as they're no longer necessary
-	glAssert(glDeleteShader(vertex));
-	glAssert(glDeleteShader(fragment));
+	m_program.setUniform(m_uShininess, mat.shininess);
 }
 
-void Shader::reload()
-{
-	glAssert(glDeleteProgram(m_program));
-    load();
+void LightingShader::setUniforms(const std::vector<PointLight>& pLights) const {
+	for (int i = 0; i < m_configuration.nPointLight; i++) {
+		m_program.setUniform(m_uPointLights[i].ambient, pLights[i].ambient);
+		m_program.setUniform(m_uPointLights[i].diffuse, pLights[i].diffuse);
+		m_program.setUniform(m_uPointLights[i].specular, pLights[i].specular);
+
+		m_program.setUniform(m_uPointLights[i].constant, pLights[i].constant);
+		m_program.setUniform(m_uPointLights[i].linear, pLights[i].linear);
+		m_program.setUniform(m_uPointLights[i].quadratic, pLights[i].quadratic);
+
+		m_program.setUniform(m_uPointLights[i].position, pLights[i].position);
+	}
 }
 
-void Shader::use() const {
-	glAssert(glUseProgram(m_program));
+void LightingShader::setUniforms(const std::vector<DirLight>& dLights) const {
+	for (int i = 0; i < m_configuration.nDirLight; i++) {
+		m_program.setUniform(m_uDirLights[i].ambient, dLights[i].ambient);
+		m_program.setUniform(m_uDirLights[i].diffuse, dLights[i].diffuse);
+		m_program.setUniform(m_uDirLights[i].specular, dLights[i].specular);
+
+		m_program.setUniform(m_uDirLights[i].direction, dLights[i].direction);
+	}
 }
 
-void Shader::setUniform(GLuint loc, glm::vec3 u3f) const
-{
-	glUniform3f(loc, u3f.x, u3f.y, u3f.z);
+void LightingShader::setUniforms(const std::vector<SpotLight>& sLights) const {
+	for (int i = 0; i < m_configuration.nSpotLight; i++) {
+		m_program.setUniform(m_uSpotLights[i].ambient, sLights[i].ambient);
+		m_program.setUniform(m_uSpotLights[i].diffuse, sLights[i].diffuse);
+		m_program.setUniform(m_uSpotLights[i].specular, sLights[i].specular);
+
+		m_program.setUniform(m_uSpotLights[i].constant, sLights[i].constant);
+		m_program.setUniform(m_uSpotLights[i].linear, sLights[i].linear);
+		m_program.setUniform(m_uSpotLights[i].quadratic, sLights[i].quadratic);
+
+		m_program.setUniform(m_uSpotLights[i].position, sLights[i].position);
+		m_program.setUniform(m_uSpotLights[i].direction, sLights[i].direction);
+
+		m_program.setUniform(m_uSpotLights[i].cutOff, sLights[i].cutOff);
+		m_program.setUniform(m_uSpotLights[i].outerCutOff, sLights[i].outerCutOff);
+	}
 }
 
-void Shader::setUniform(GLuint loc, glm::mat3 um3fv) const
-{
-	glUniformMatrix3fv(loc, 1, GL_FALSE, glm::value_ptr(um3fv));
+void LightingShader::load() {
+	m_vertex->setSourceFile("shaders/lighting.vert");
+	m_fragment->setSourceFiles({ "shaders/lighting.frag", "shaders/" + m_configuration.name + ".frag" });
+	
+	//Defines
+	std::vector<std::string> defines;
+	//Lights
+	if (m_configuration.nPointLight > 0) {
+		defines.push_back("N_POINTLIGHT " + std::to_string(m_configuration.nPointLight));
+	} else {
+		defines.push_back("NO_POINTLIGHT");
+	}
+	if (m_configuration.nDirLight > 0) {
+		defines.push_back("N_DIRLIGHT " + std::to_string(m_configuration.nDirLight));
+	} else {
+		defines.push_back("NO_DIRLIGHT");
+	}
+	if (m_configuration.nSpotLight > 0) {
+		defines.push_back("N_SPOTLIGHT " + std::to_string(m_configuration.nSpotLight));
+	} else {
+		defines.push_back("NO_SPOTLIGHT");
+	}
+
+	//Textures
+	if (m_configuration.textureTypes & Ambient)
+		defines.push_back("AMBIENT_MAP");
+	if (m_configuration.textureTypes & Diffuse)
+		defines.push_back("DIFFUSE_MAP");
+	if (m_configuration.textureTypes & Specular)
+		defines.push_back("SPECULAR_MAP");
+
+	m_fragment->setDefines(defines);
 }
 
-void Shader::setUniform(GLuint loc, glm::mat4 um4fv) const
-{
-	glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(um4fv));
-}
+void LightingShader::fillUniformsLoc() {
+	//Vertex
+	m_uModel = glGetUniformLocation(m_program, "model");
+	m_uNormalModel = glGetUniformLocation(m_program, "normalModel");
+	m_uView = glGetUniformLocation(m_program, "view");
+	m_uProjection = glGetUniformLocation(m_program, "projection");
 
-void Shader::setUniform(GLuint loc, GLfloat u1f) const
-{
-	glUniform1f(loc, u1f);
-}
+	//Fragment : Material
+	if (m_configuration.textureTypes & Ambient)
+		m_uKa = glGetUniformLocation(m_program, "ambient");
+	else
+		m_uKa = glGetUniformLocation(m_program, "ka");
 
-void Shader::setUniform(GLuint loc, GLuint u1i) const
-{
-	glUniform1i(loc, u1i);
+	if (m_configuration.textureTypes & Diffuse)
+		m_uKd = glGetUniformLocation(m_program, "diffuse");
+	else
+		m_uKd = glGetUniformLocation(m_program, "kd");
+
+	if (m_configuration.textureTypes & Specular)
+		m_uKs = glGetUniformLocation(m_program, "specular");
+	else
+		m_uKs = glGetUniformLocation(m_program, "ks");
+
+	m_uShininess = glGetUniformLocation(m_program, "shininess");
+
+	//Fragment : Lights
+	m_uDirLights.clear();
+	for (int i = 0; i < m_configuration.nDirLight; i++) {
+		std::string n = std::to_string(i);
+		uDirLight ulight;
+		ulight.ambient = glGetUniformLocation(m_program, std::string("dirLights[" + n + "].ambient").c_str());
+		ulight.diffuse = glGetUniformLocation(m_program, std::string("dirLights[" + n + "].diffuse").c_str());
+		ulight.specular = glGetUniformLocation(m_program, std::string("dirLights[" + n + "].specular").c_str());
+		ulight.direction = glGetUniformLocation(m_program, std::string("dirLights[" + n + "].direction").c_str());
+		m_uDirLights.push_back(ulight);
+	}
+	m_uSpotLights.clear();
+	for (int i = 0; i < m_configuration.nSpotLight; i++) {
+		std::string n = std::to_string(i);
+		uSpotLight ulight;
+		ulight.position = glGetUniformLocation(m_program, std::string("spotLights[" + n + "].position").c_str());
+		ulight.ambient = glGetUniformLocation(m_program, std::string("spotLights[" + n + "].ambient").c_str());
+		ulight.diffuse = glGetUniformLocation(m_program, std::string("spotLights[" + n + "].diffuse").c_str());
+		ulight.specular = glGetUniformLocation(m_program, std::string("spotLights[" + n + "].specular").c_str());
+		ulight.constant = glGetUniformLocation(m_program, std::string("spotLights[" + n + "].constant").c_str());
+		ulight.linear = glGetUniformLocation(m_program, std::string("spotLights[" + n + "].linear").c_str());
+		ulight.quadratic = glGetUniformLocation(m_program, std::string("spotLights[" + n + "].quadratic").c_str());
+
+		ulight.direction = glGetUniformLocation(m_program, std::string("spotLights[" + n + "].direction").c_str());
+		ulight.cutOff = glGetUniformLocation(m_program, std::string("spotLights[" + n + "].cutOff").c_str());
+		ulight.outerCutOff = glGetUniformLocation(m_program, std::string("spotLights[" + n + "].cutOff").c_str());
+		m_uSpotLights.push_back(ulight);
+	}
+	m_uPointLights.clear();
+	for (int i = 0; i < m_configuration.nPointLight; i++) {
+		std::string n = std::to_string(i);
+		uPointLight ulight;
+		ulight.position = glGetUniformLocation(m_program, std::string("pointLights[" + n + "].position").c_str());
+		ulight.ambient = glGetUniformLocation(m_program, std::string("pointLights[" + n + "].ambient").c_str());
+		ulight.diffuse = glGetUniformLocation(m_program, std::string("pointLights[" + n + "].diffuse").c_str());
+		ulight.specular = glGetUniformLocation(m_program, std::string("pointLights[" + n + "].specular").c_str());
+		ulight.constant = glGetUniformLocation(m_program, std::string("pointLights[" + n + "].constant").c_str());
+		ulight.linear = glGetUniformLocation(m_program, std::string("pointLights[" + n + "].linear").c_str());
+		ulight.quadratic = glGetUniformLocation(m_program, std::string("pointLights[" + n + "].quadratic").c_str());
+		m_uPointLights.push_back(ulight);
+	}
+
+	//Fragment : viewPos
+	m_uViewPos = glGetUniformLocation(m_program, "viewPos");
 }

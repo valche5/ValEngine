@@ -4,10 +4,13 @@
 #include <vector>
 #include <unordered_map>
 
-#include "camera.h"
+#include "Camera.h"
 #include "SceneObject.h"
 #include "Light.h"
-#include "PhongShader.h"
+#include "Shader.h"
+#include "Texture.h"
+
+#include "../utils/Arrow.h"
 
 class Scene;
 
@@ -40,11 +43,14 @@ public:
 	
 private:
 	void computeShaders();
-	void computeShaders(SceneObjectPtr &node);
+	void computeShaders(const SceneObjectPtr &node);
 
-	void renderNode(SceneObjectPtr &node, const PhongShader &shader, const ShaderConfiguration &configuration, glm::mat4 accTransform);
+	void renderNode(const SceneObjectPtr &node, const MeshShaderPtr &shader, const ShaderConfiguration &configuration, glm::mat4 accTransform);
 
-	std::unordered_map<std::string, PhongShader> shaders;
+	std::unordered_map<std::string, MeshShaderPtr> shaders;
+
+	Arrow m_arrow;
+	ShaderProgramGL m_arrowShader;
 };
 
 #endif // !SCENE_H

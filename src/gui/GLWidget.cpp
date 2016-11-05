@@ -10,6 +10,14 @@ GLWidget::GLWidget(QWidget *parent) :
 	setMouseTracking(false);
 	setFocusPolicy(Qt::StrongFocus);
 
+	QSurfaceFormat format;
+	format.setDepthBufferSize(24);
+	format.setStencilBufferSize(8);
+	format.setVersion(4, 5);
+	format.setProfile(QSurfaceFormat::CoreProfile);
+	format.setOption(QSurfaceFormat::DebugContext);
+	setFormat(format);
+
 	QTimer *t = new QTimer(this);
 	connect(t, SIGNAL(timeout()), this, SLOT(update()));
 	t->start(0);

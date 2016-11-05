@@ -8,36 +8,25 @@
 
 class Scene;
 
-enum TextureType : char {
+typedef char TextureTypes;
+
+enum TextureType : TextureTypes {
 	Ambient = 0x01,
 	Diffuse = 0x02,
 	Specular = 0x04,
 	Normal = 0x08
 };
 
+const std::unordered_map<TextureType, std::string> textureTypeString({
+	{ Ambient, "Ambient" },
+	{ Diffuse, "Diffuse" },
+	{ Specular, "Specular" },
+	{ Normal, "Normal" }
+});
+
 class Material {
 public:
-	char textureTypes = 0x00;
-
-	std::string textureTypeString(TextureType type) {
-		switch (type) {
-		case Ambient:
-			return "Ambient";
-			break;
-		case Diffuse:
-			return "Diffuse";
-			break;
-		case Specular:
-			return "Specular";
-			break;
-		case Normal:
-			return "Normal";
-			break;
-		default:
-			return "Inconnu";
-			break;
-		}
-	}
+	TextureTypes textureTypes = 0x00;
 
 	std::unordered_map<TextureType, std::string> textures;
 

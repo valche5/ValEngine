@@ -1,5 +1,7 @@
 #include "ModelLoader.h"
 
+#include "Mesh.h"
+
 using std::cout;
 using std::endl;
 

@@ -1,4 +1,4 @@
-#include "engine.h"
+#include "Engine.h"
 
 #include <iostream>
 
@@ -6,9 +6,11 @@ using std::cout;
 using std::endl;
 
 #include "openGL.h"
-#include "camera.h"
+#include "Camera.h"
 
 #include "ModelLoader.h"
+
+#include "../utils/debugMessage.h"
 
 Engine::Engine()
 {
@@ -36,15 +38,27 @@ void Engine::init()
 	cout << "GL Version\t" << OGLVersion << endl;
 	cout << "GLSL Version\t" << GLSLVersion << endl;
 
+	//Debug
+	GLint flags;
+	glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+	if (flags & GL_CONTEXT_FLAG_DEBUG_BIT) {
+		cout << "Debug context\tOK" << endl;
+		glEnable(GL_DEBUG_OUTPUT);
+		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+		glDebugMessageCallback(debugMessage, nullptr);
+
+		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
+	}
+
 	glViewport(0, 0, 800, 600);
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
 
 	m_lastFrameTime = std::chrono::high_resolution_clock::now();
 
-	m_scene = std::move(ModelLoader::loadScene("data/car/sportsCar.obj"));
-	//m_scene->getRootObject()->translate(glm::vec3(0, -1.75, 0));
-	m_scene->getRootObject()->scale(glm::vec3(0.5));
+	m_scene = std::move(ModelLoader::loadScene("data/crysis/nanosuit.obj"));
+	m_scene->getRootObject()->translate(glm::vec3(0, 0, 0));
+	m_scene->getRootObject()->scale(glm::vec3(0.1));
 
 	cout << m_scene->toString() << endl;
 

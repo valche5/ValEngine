@@ -3,31 +3,31 @@
 
 #include <vector>
 
-#include "texture.h"
 #include "Material.h"
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
-struct Vertex {
+#include "openGL.h"
+
+typedef struct Vertex {
     glm::vec3 Position;
     glm::vec3 Normal;
     glm::vec2 TexCoords;
-};
+} Vertex;
 
 class Mesh {
 public:
 	Mesh();
-	Mesh(std::vector<Vertex> vertices, std::vector<GLuint> indices, std::vector<Texture> textures);
 	~Mesh();
+
 	void draw();
 	void setupMesh();
 public:
     /*  Mesh Data  */
     std::vector<Vertex> vertices;
     std::vector<GLuint> indices;
-    std::vector<Texture> textures;
 	std::string name;
 	std::string shading;
 

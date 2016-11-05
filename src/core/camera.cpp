@@ -1,4 +1,4 @@
-#include "camera.h"
+#include "Camera.h"
 
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch)
     : m_front(glm::vec3(0.0f, 0.0f, -1.0f)), m_movementSpeed(SPEED), m_mouseSensitivity(SENSITIVTY), m_zoom(ZOOM), m_direction(NONE)
