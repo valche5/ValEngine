@@ -4,7 +4,7 @@
 #include <memory>
 #include <chrono>
 
-#include "Camera.h"
+#include <core/Camera.h>
 
 class Scene;
 
@@ -22,10 +22,11 @@ public:
 
 	Camera *camera();
 
+	void loadDefaultScene();
+	void loadScene(const std::string &path);
+
 	void reloadShaders();
 	void setWireframe(bool enable);
-
-	
 private:
 	unsigned int m_shaderProgram;
 	unsigned int m_VAO;

@@ -9,8 +9,8 @@
 #include <glm/glm.hpp>
 #include <glm/matrix.hpp>
 
-#include "Mesh.h"
-#include "Material.h"
+#include <core/Mesh.h>
+#include <core/Types.h>
 
 class SceneObject;
 class Scene;
@@ -23,46 +23,23 @@ public:
 
 	void translate(glm::vec3 translation);
 	void scale(glm::vec3 scaling);
+	std::string toString();
 
-	std::vector<Mesh> meshes;
-	Material material;
-
+public:
+	//Tree
 	std::vector<SceneObjectPtr> childs;
 	SceneObject *parent;
 
+	//Meshes
+	std::vector<MeshPtr> meshes;
+	Material material;
+
+	//Parameters
 	glm::mat4 transform;
 	std::string name;
+	AABB bBox;
 
 	Scene *scene;
-public:
-	std::string toString() {
-		std::stringstream result;
-		std::string space;
-
-		SceneObject *p = parent;
-		while (p != nullptr) {
-			space += "   ";
-			p = p->parent;
-		}
-		result << space << "-Object " << name << std::endl;
-		for (auto &mesh : meshes) {
-			result << space << " -Mesh " << mesh.name << ", " << mesh.vertices.size() << " vertices, " << mesh.indices.size() << " indices" << std::endl;
-			Material &mat = mesh.material;
-			result << space << "  -Material " << mat.name << " shininess(" << mat.shininess << ") "
-				<< "ka(" << mat.ka.r << "," << mat.ka.g << "," << mat.ka.b << ") "
-				<< "kd(" << mat.kd.r << "," << mat.kd.g << "," << mat.kd.b << ") "
-				<< "ks(" << mat.ks.r << "," << mat.ks.g << "," << mat.ks.b << ") "
-				<< std::endl;
-			for (auto &tex : mat.textures) 
-				result << space << "  -Texture (" << textureTypeString.at(tex.first) + ") " << tex.second << std::endl;
-		}
-
-		for (auto &child : childs) {
-			result << child->toString();
-		}
-
-		return result.str();
-	}
 };
 
 #endif // SCENEOBJECT_H

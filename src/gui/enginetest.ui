@@ -76,10 +76,22 @@
     <property name="title">
      <string>Fichier</string>
     </property>
+    <addaction name="actionOuvrir"/>
+    <addaction name="actionFermer"/>
    </widget>
    <addaction name="menuFichier"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionOuvrir">
+   <property name="text">
+    <string>Ouvrir</string>
+   </property>
+  </action>
+  <action name="actionFermer">
+   <property name="text">
+    <string>Fermer</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>

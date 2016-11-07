@@ -1,6 +1,6 @@
-#include "Shader.h"
+#include "MeshShader.h"
 
-#include "Scene.h"
+#include <core/Scene.h>
 
 void LightingShader::setUniforms(const Camera &camera) const {
 	m_program.setUniform(m_uView, camera.getViewMatrix());
@@ -18,38 +18,35 @@ void LightingShader::setUniforms(const Material &mat) const {
 	if (m_configuration.textureTypes & Ambient) {
 		glActiveTexture(GL_TEXTURE0 + textureCount);
 		m_program.setUniform(m_uKa, textureCount);
-		Texture &tex = mat.scene->textures[mat.textures.at(Ambient)];
-		tex.bind();
+		mat.getTexture(Ambient)->bind();
 		textureCount++;
 	} else {
-		m_program.setUniform(m_uKa, mat.ka);
+		m_program.setUniform(m_uKa, mat.getProperty<glm::vec3>(Ka));
 	}
 
 	if (m_configuration.textureTypes & Diffuse) {
 		glActiveTexture(GL_TEXTURE0 + textureCount);
 		m_program.setUniform(m_uKd, textureCount);
-		Texture &tex = mat.scene->textures[mat.textures.at(Diffuse)];
-		tex.bind();
+		mat.getTexture(Diffuse)->bind();
 		textureCount++;
 	} else {
-		m_program.setUniform(m_uKd, mat.kd);
+		m_program.setUniform(m_uKd, mat.getProperty<glm::vec3>(Kd));
 	}
 
 	if (m_configuration.textureTypes & Specular) {
 		glActiveTexture(GL_TEXTURE0 + textureCount);
 		m_program.setUniform(m_uKs, textureCount);
-		Texture &tex = mat.scene->textures[mat.textures.at(Specular)];
-		tex.bind();
+		mat.getTexture(Specular)->bind();
 		textureCount++;
 	} else {
-		m_program.setUniform(m_uKs, mat.ks);
+		m_program.setUniform(m_uKs, mat.getProperty<glm::vec3>(Ks));
 	}
 
 	if (textureCount > 0) {
 		glActiveTexture(GL_TEXTURE0);
 	}
 
-	m_program.setUniform(m_uShininess, mat.shininess);
+	m_program.setUniform(m_uShininess, mat.getProperty<float>(Shininess));
 }
 
 void LightingShader::setUniforms(const std::vector<PointLight>& pLights) const {

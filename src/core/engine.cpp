@@ -5,16 +5,13 @@
 using std::cout;
 using std::endl;
 
-#include "openGL.h"
-#include "Camera.h"
-
-#include "ModelLoader.h"
-
-#include "../utils/debugMessage.h"
+#include <core/openGL.h>
+#include <core/Camera.h>
+#include <core/ModelLoader.h>
+#include <utils/debugMessage.h>
 
 Engine::Engine()
-{
-}
+{}
 
 Engine::~Engine()
 {
@@ -50,32 +47,14 @@ void Engine::init()
 		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
 	}
 
+	//m_scene = ModelLoader::loadScene("data/crysis/nanosuit.obj");
+	loadDefaultScene();
+
 	glViewport(0, 0, 800, 600);
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
 
 	m_lastFrameTime = std::chrono::high_resolution_clock::now();
-
-	m_scene = std::move(ModelLoader::loadScene("data/crysis/nanosuit.obj"));
-	m_scene->getRootObject()->translate(glm::vec3(0, 0, 0));
-	m_scene->getRootObject()->scale(glm::vec3(0.1));
-
-	cout << m_scene->toString() << endl;
-
-	m_camera = m_scene->getCamera();
-	m_camera->m_screenRatio = 800.f / 600.f;
-
-	//m_scene->dirLights.push_back(DirLight());
-	PointLight light(glm::vec3(0.58, -2.74, 0.033));
-	//light.constant = 1;
-	//light.linear = 0;
-	//light.quadratic = 0;
-	m_scene->pointLights.push_back(light);
-
-	SpotLight slight;
-	m_scene->spotLights.push_back(slight);
-
-	m_scene->init();
 }
 
 void Engine::paint()
@@ -98,6 +77,7 @@ void Engine::paint()
 void Engine::resize(int w, int h)
 {
 	glViewport(0, 0, h, w);
+	m_camera->m_screenRatio = (float) w / (float) h;
 }
 
 void Engine::clean()
@@ -107,6 +87,33 @@ void Engine::clean()
 Camera * Engine::camera()
 {
 	return m_camera;
+}
+
+void Engine::loadDefaultScene() {
+	m_scene = ScenePtr(new Scene);
+	m_scene->init();
+	m_camera = m_scene->getCamera();
+}
+
+void Engine::loadScene(const std::string & path) {
+	m_scene = ModelLoader::loadScene(path);
+
+	cout << m_scene->toString() << endl;
+
+	glm::vec3 center = m_scene->getRootObject()->bBox.getCenter();
+	cout << "Scene Center : (" << center.x << "," << center.y << "," << center.z << ")" << endl;
+
+	m_camera = m_scene->getCamera();
+	m_camera->m_screenRatio = 800.f / 600.f;
+
+	m_scene->dirLights.push_back(DirLight());
+	//PointLight light(glm::vec3(0.58, -2.74, 0.033));
+	//m_scene->pointLights.push_back(light);
+
+	//SpotLight slight;
+	//m_scene->spotLights.push_back(slight);
+
+	m_scene->init();
 }
 
 void Engine::reloadShaders()

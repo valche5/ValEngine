@@ -2,62 +2,26 @@
 
 #include <string>
 #include <sstream>
-#include "OpenGL.h"
 
-#include "glassert.h"
+void Mesh::setupMesh() {
+	gl::BufferPtr VBO(new gl::Buffer(gl::BufferTarget::ArrayBuffer));
+	VBO->setData(vertices);
+	VBO->setAttributes({
+		{ 0, 3, GL_FLOAT, 0 },
+		{ 1, 3, GL_FLOAT, offsetof(Vertex, Normal) },
+		{ 2, 3, GL_FLOAT, offsetof(Vertex, TexCoords) },
+	});
 
-using namespace std;
+	gl::BufferPtr EBO(new gl::Buffer(gl::BufferTarget::ElementBuffer));
+	EBO->setData(indices);
 
-Mesh::Mesh()
-	: VAO(0), VBO(0), EBO(0)
-{
-}
-
-Mesh::~Mesh()
-{
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
+	m_vertexArray.bindVertexBuffers({ VBO, EBO });
 }
 
 void Mesh::draw()
 {
-    glAssert(glBindVertexArray(VAO));
-    glAssert(glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0));
-    glAssert(glBindVertexArray(0));
+	m_vertexArray.bind();
+	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+	m_vertexArray.unbind();
 }
 
-void Mesh::setupMesh()
-{
-    glAssert(glGenVertexArrays(1, &VAO));
-    glAssert(glGenBuffers(1, &VBO));
-    glAssert(glGenBuffers(1, &EBO));
-
-    glAssert(glBindVertexArray(VAO));
-
-    glAssert(glBindBuffer(GL_ARRAY_BUFFER, VBO));
-
-    glAssert(glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex),
-                 &vertices[0], GL_STATIC_DRAW));
-
-    // Vertex Positions
-    glAssert(glEnableVertexAttribArray(0));
-    glAssert(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                         (GLvoid*)0));
-
-    // Vertex Normals
-    glAssert(glEnableVertexAttribArray(1));
-    glAssert(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                         (GLvoid*)offsetof(Vertex, Normal)));
-
-    // Vertex Texture Coords
-    glAssert(glEnableVertexAttribArray(2));
-    glAssert(glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                         (GLvoid*)offsetof(Vertex, TexCoords)));
-
-	//Indices
-    glAssert(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO));
-    glAssert(glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint),
-                 &indices[0], GL_STATIC_DRAW));
-
-    glAssert(glBindVertexArray(0));
-}

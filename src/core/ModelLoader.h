@@ -3,20 +3,21 @@
 
 #include <string>
 
-#include "Scene.h"
-
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <glm/glm.hpp>
+
+#include <core/Scene.h>
+#include <core/Types.h>
 
 class ModelLoader {
 public:
 	static ScenePtr loadScene(const std::string &path);
 private:
 	static void processNode(const aiScene *aiscene, ScenePtr &scene, aiNode* node, SceneObject *object);
-	static void processMesh(const aiScene *aiscene, ScenePtr &scene, aiMesh* mesh, Mesh *glMesh);
-	static void loadTextures(ScenePtr &scene, aiMaterial* mat, Mesh *glMesh, aiTextureType aitype, TextureType type);
+	static void processMesh(const aiScene *aiscene, ScenePtr &scene, aiMesh* mesh, MeshPtr &glMesh);
+	static void loadTextures(ScenePtr &scene, aiMaterial* mat, MeshPtr &glMesh, aiTextureType aitype, TextureType type);
 
 	static std::string m_directory;
 

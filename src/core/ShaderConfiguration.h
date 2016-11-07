@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "Material.h"
+#include <core/Material.h>
 
 struct ShaderConfiguration {
 	std::string name;

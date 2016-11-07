@@ -8,8 +8,13 @@
 class Camera;
 
 class GLWidget : public QOpenGLWidget {
+	Q_OBJECT
 public:
 	GLWidget(QWidget *parent = nullptr);
+
+public slots:
+	void openScene();
+	void closeScene();
 
 protected:
 	void initializeGL();

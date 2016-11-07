@@ -9,7 +9,7 @@
 #define APIENTRY
 #endif
 
-#include "../core/openGL.h"
+#include <core/openGL.h>
 
 using std::cout;
 using std::endl;

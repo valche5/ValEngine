@@ -6,7 +6,7 @@
 
 #include <glm/glm.hpp>
 
-class Scene;
+#include <glw/Types.h>
 
 typedef char TextureTypes;
 
@@ -24,21 +24,89 @@ const std::unordered_map<TextureType, std::string> textureTypeString({
 	{ Normal, "Normal" }
 });
 
+enum MaterialProperty {
+	Ka, Kd, Ks, Shininess
+};
+
 class Material {
 public:
-	TextureTypes textureTypes = 0x00;
-
-	std::unordered_map<TextureType, std::string> textures;
-
-	glm::vec3 ka = glm::vec3(0, 0, 0);
-	glm::vec3 kd = glm::vec3(0, 0, 0);
-	glm::vec3 ks = glm::vec3(0, 0, 0);
-
-	float shininess = 0.f;
-
 	std::string name;
+	TextureTypes textureTypes = 0x00;
+public:
+	void addTexture(TextureType type, gl::TexturePtr texture) {
+		m_textures.insert({ type, texture });
+	}
 
-	Scene *scene;
+	gl::TexturePtr &getTexture(TextureType type) {
+		return m_textures.at(type);
+	}
+
+	const gl::TexturePtr &getTexture(TextureType type) const {
+		return m_textures.at(type);
+	}
+
+	std::unordered_map<TextureType, gl::TexturePtr> &getTextures() {
+		return m_textures;
+	}
+
+	const std::unordered_map<TextureType, gl::TexturePtr> &getTextures() const {
+		return m_textures;
+	}
+
+	template<typename T>
+	void addProperty(MaterialProperty prop, T value) {
+		std::unordered_map<MaterialProperty, T> &map = getMap<T>();
+		map[prop] = value;
+	};
+
+	template<typename T>
+	void setProperty(MaterialProperty prop, T value) {
+		std::unordered_map<MaterialProperty, T> &map = getMap<T>();
+		map[prop] = value;
+	};
+
+	template<typename T>
+	bool issetProperty(MaterialProperty prop) const {
+		const std::unordered_map<MaterialProperty, T> &map = getMap<T>();
+		return (map.find(prop) == map.end()) false : true;
+	};
+
+	template<typename T>
+	T getProperty(MaterialProperty prop) const {
+		const std::unordered_map<MaterialProperty, T> &map = getMap<T>();
+		return map.at(prop);
+	}
+
+private:
+	template<typename T>
+	std::unordered_map<MaterialProperty, T> &getMap() {
+		return std::unordered_map<MaterialProperty, T>();
+	};
+	template<>
+	std::unordered_map<MaterialProperty, float> &getMap<float>() {
+		return m_floatProperties;
+	}
+	template<>
+	std::unordered_map<MaterialProperty, glm::vec3> &getMap<glm::vec3>() {
+		return m_vec3Properties;
+	}
+	template<typename T>
+	const std::unordered_map<MaterialProperty, T> &getMap() const {
+		return std::unordered_map<MaterialProperty, T>();
+	};
+	template<>
+	const std::unordered_map<MaterialProperty, float> &getMap<float>() const {
+		return m_floatProperties;
+	}
+	template<>
+	const std::unordered_map<MaterialProperty, glm::vec3> &getMap<glm::vec3>() const {
+		return m_vec3Properties;
+	}  
+private:
+	std::unordered_map<TextureType, gl::TexturePtr> m_textures;
+
+	std::unordered_map<MaterialProperty, float> m_floatProperties;
+	std::unordered_map<MaterialProperty, glm::vec3> m_vec3Properties;
 };
 
 #endif // MATERIAL_H

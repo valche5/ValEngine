@@ -1,19 +1,19 @@
-#ifndef PHONGSHADER_H
-#define PHONGSHADER_H
+#ifndef MESHSHADER_H
+#define MESHSHADER_H
 
 #include <vector>
 
-#include "ShaderProgramGL.h"
-#include "ShaderConfiguration.h"
-#include "camera.h"
-#include "Light.h"
-#include "Material.h"
+#include <glw/ShaderProgram.h>
+#include <core/ShaderConfiguration.h>
+#include <core/camera.h>
+#include <core/Light.h>
+#include <core/Material.h>
 
 class MeshShader {
 public:
 	MeshShader(const ShaderConfiguration &configuration)
-		: m_configuration(configuration), m_vertex(new ShaderGL(ShaderType::Vertex))
-		, m_fragment(new ShaderGL(ShaderType::Fragment))
+		: m_configuration(configuration), m_vertex(new gl::Shader(gl::ShaderType::Vertex))
+		, m_fragment(new gl::Shader(gl::ShaderType::Fragment))
 	{}
 	virtual ~MeshShader() {};
 
@@ -44,15 +44,13 @@ protected:
 
 protected:
 	//ShaderProgram
-	ShaderProgramGL m_program;
-	ShaderGLPtr m_vertex;
-	ShaderGLPtr m_fragment;
+	gl::ShaderProgram m_program;
+	gl::ShaderPtr m_vertex;
+	gl::ShaderPtr m_fragment;
 
 	//Configuration
 	ShaderConfiguration m_configuration;
 };
-
-typedef std::unique_ptr<MeshShader> MeshShaderPtr;
 
 struct uPointLight {
 	GLuint position;

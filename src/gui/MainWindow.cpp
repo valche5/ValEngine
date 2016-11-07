@@ -9,6 +9,9 @@ MainWindow::MainWindow(QWidget *parent)
 {
 	ui.setupUi(this);
 	readSettings();
+
+	connect(ui.actionOuvrir, &QAction::triggered, ui.widget, &GLWidget::openScene);
+	connect(ui.actionFermer, &QAction::triggered, ui.widget, &GLWidget::closeScene);
 }
 
 MainWindow::~MainWindow()

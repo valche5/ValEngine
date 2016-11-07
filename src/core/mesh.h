@@ -1,15 +1,17 @@
 #ifndef MESH_H
 #define MESH_H
 
+#include <memory>
 #include <vector>
 
-#include "Material.h"
+#include <utils/BoundingBox.h>
+#include <core/Material.h>
+#include <core/openGL.h>
+#include <glw/VertexArray.h>
 
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
-
-#include "openGL.h"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 typedef struct Vertex {
     glm::vec3 Position;
@@ -19,13 +21,10 @@ typedef struct Vertex {
 
 class Mesh {
 public:
-	Mesh();
-	~Mesh();
-
-	void draw();
 	void setupMesh();
+	void draw();
 public:
-    /*  Mesh Data  */
+    // Mesh Data
     std::vector<Vertex> vertices;
     std::vector<GLuint> indices;
 	std::string name;
@@ -33,9 +32,13 @@ public:
 
 	//Material
 	Material material;
+
+	//Bounding Box
+	AABB bBox;
 private:
     //Render
-    GLuint VAO, VBO, EBO;
+	gl::VertexArray m_vertexArray;
 };
+
 
 #endif // MESH_H

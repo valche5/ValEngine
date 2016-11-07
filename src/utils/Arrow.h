@@ -3,60 +3,33 @@
 
 #include <vector>
 
-#include "../core/openGL.h"
 #include <glm/glm.hpp>
+
+#include <core/openGL.h>
+#include <glw/VertexArray.h>
 
 class Arrow {
 public:
 	Arrow() {
-		GLfloat lineVertices[] = {
-			0.f, 0.f, 0.9f
-		};
-
-		glGenVertexArrays(1, &coneVAO);
-		glGenVertexArrays(1, &bottomVAO);
-		glGenVertexArrays(1, &lineVAO);
-		glGenBuffers(1, &coneVBO);
-		glGenBuffers(1, &bottomVBO);
-		glGenBuffers(1, &lineVBO);
-
 		n = 20;
 		std::vector<glm::vec3> completeCone = getCone(glm::vec3(0, 0, 1), glm::vec3(0, 0, 1), 0.1, 0.04, n);
-		std::vector<glm::vec3> cone(completeCone.begin(), completeCone.begin() + n + 3);
-		std::vector<glm::vec3> bottom(completeCone.begin() + n + 3, completeCone.end());
+		completeCone.insert(completeCone.begin(), { glm::vec3(0, 0, 0), glm::vec3(0, 0, 0.9) });
 
-		glBindVertexArray(coneVAO);
-		glBindBuffer(GL_ARRAY_BUFFER, coneVBO);
-		glBufferData(GL_ARRAY_BUFFER, (n + 2) * sizeof(glm::vec3), &cone[0], GL_STATIC_DRAW);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
-		glEnableVertexAttribArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindVertexArray(0);
+		gl::BufferPtr VBO(new gl::Buffer(gl::BufferTarget::ArrayBuffer));
+		VBO->setData(completeCone);
+		VBO->setAttributes({ { 0, 3, GL_FLOAT, 0 } });
 
-		glBindVertexArray(bottomVAO);
-		glBindBuffer(GL_ARRAY_BUFFER, bottomVBO);
-		glBufferData(GL_ARRAY_BUFFER, (n + 2) * sizeof(glm::vec3), &bottom[0], GL_STATIC_DRAW);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
-		glEnableVertexAttribArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindVertexArray(0);
-
-		glBindVertexArray(lineVAO);
-		glBindBuffer(GL_ARRAY_BUFFER, lineVBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(lineVertices), lineVertices, GL_STATIC_DRAW);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
-		glEnableVertexAttribArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindVertexArray(0);
+		m_VAO.bindVertexBuffer(VBO);
 	}
+	~Arrow() {
+	}
+
 	void draw() {
-		glBindVertexArray(coneVAO);
-		glDrawArrays(GL_TRIANGLE_FAN, 0, n+1);
-		glBindVertexArray(bottomVAO);
-		glDrawArrays(GL_TRIANGLE_FAN, 0, n+1);
-		glBindVertexArray(lineVAO);
+		m_VAO.bind();
 		glDrawArrays(GL_LINES, 0, 2);
-		glBindVertexArray(0);
+		glDrawArrays(GL_TRIANGLE_FAN, 2, n + 2);
+		glDrawArrays(GL_TRIANGLE_FAN, n + 4, n + 2);
+		m_VAO.unbind();
 	}
 
 	glm::vec3 perp(const glm::vec3 &v) {
@@ -103,20 +76,20 @@ public:
 		for (int i = 0; i < n; ++i) {
 			result.push_back(pts[i]);
 		}
-		result.push_back(a);
+		result.push_back(pts[0]);
 
 		// draw cone bottom
 		result.push_back(c);
 		for (int i = n - 1; i >= 0; --i) {
 			result.push_back(pts[i]);
 		}
-		result.push_back(c);
+		result.push_back(pts[0]);
 
 		return result;
 	}
 private:
-	GLuint coneVAO, coneVBO, bottomVAO, bottomVBO, lineVAO, lineVBO;
 	int n;
+	gl::VertexArray m_VAO;
 };
 
 #endif // ARROW_H

@@ -54,6 +54,12 @@
     <Filter Include="Source Files\Utils">
       <UniqueIdentifier>{e9522131-42a5-47de-94e1-ec6af8feea8a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\GLWrapper">
+      <UniqueIdentifier>{122345eb-8aba-433a-9159-47f5679f99d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GLWrapper">
+      <UniqueIdentifier>{00efa96e-d450-42af-b752-d028ec87ad89}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\gui\main.cpp">
@@ -83,9 +89,6 @@
     <ClCompile Include="GeneratedFiles\Release\moc_MainWindow.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="src\core\Texture.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
     <ClCompile Include="src\core\Mesh.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
@@ -95,14 +98,35 @@
     <ClCompile Include="src\core\Camera.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\core\ShaderProgramGL.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="src\core\Shader.cpp">
-      <Filter>Source Files\Core</Filter>
-    </ClCompile>
     <ClCompile Include="src\utils\File.cpp">
       <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_GLWidget.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_GLWidget.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utils\glmstreams.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glw\Shader.cpp">
+      <Filter>Source Files\GLWrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glw\ShaderProgram.cpp">
+      <Filter>Source Files\GLWrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glw\Texture.cpp">
+      <Filter>Source Files\GLWrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glw\Buffer.cpp">
+      <Filter>Source Files\GLWrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="src\glw\VertexArray.cpp">
+      <Filter>Source Files\GLWrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\MeshShader.cpp">
+      <Filter>Source Files\Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -115,13 +139,13 @@
     <CustomBuild Include="src\gui\MainWindow.h">
       <Filter>Header Files\GUI</Filter>
     </CustomBuild>
+    <CustomBuild Include="src\gui\GLWidget.h">
+      <Filter>Header Files\GUI</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_enginetest.h">
       <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\glassert.h">
-      <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\core\Light.h">
       <Filter>Header Files\Core</Filter>
@@ -138,13 +162,7 @@
     <ClInclude Include="src\core\SceneObject.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\gui\GLWidget.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
     <ClInclude Include="src\core\Material.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderConfiguration.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\core\Mesh.h">
@@ -156,23 +174,50 @@
     <ClInclude Include="src\core\Camera.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\core\Texture.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
     <ClInclude Include="src\utils\File.h">
-      <Filter>Header Files\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\ShaderProgramGL.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\Shader.h">
-      <Filter>Header Files\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="src\utils\debugMessage.h">
       <Filter>Header Files\Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\utils\Arrow.h">
       <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\BoundingBox.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\ShaderConfiguration.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glw\Shader.h">
+      <Filter>Header Files\GLWrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glw\Types.h">
+      <Filter>Header Files\GLWrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glw\ShaderProgram.h">
+      <Filter>Header Files\GLWrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glw\Texture.h">
+      <Filter>Header Files\GLWrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glw\VertexArray.h">
+      <Filter>Header Files\GLWrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glw\Buffer.h">
+      <Filter>Header Files\GLWrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glw\GLObject.h">
+      <Filter>Header Files\GLWrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\Glmstreams.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\DebugMessage.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\Types.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\MeshShader.h">
+      <Filter>Header Files\Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -199,6 +244,9 @@
     </None>
     <None Include="shaders\fill.vert">
       <Filter>Shaders</Filter>
+    </None>
+    <None Include="src\glw\Buffer.inl">
+      <Filter>Source Files\GLWrapper</Filter>
     </None>
   </ItemGroup>
 </Project>

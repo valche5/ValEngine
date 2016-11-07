@@ -12,5 +12,5 @@ vec3 calcLight(vec3 normal, vec3 viewDir, vec3 lightDir, Light light, Material m
     vec3 specular = light.specular * spec * material.ks;
 
 	return (ambient + diffuse + specular);
-	//return vec3(diff);
+	//return vec3(diffuse);
 }
