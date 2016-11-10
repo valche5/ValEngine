@@ -21,7 +21,7 @@ public:
 	void bind() const;
 	void unbind() const;
 private:
-	std::unordered_map<BufferTarget, BufferPtr> m_buffers;
+	std::vector<BufferPtr> m_buffers;
 };
 
 }

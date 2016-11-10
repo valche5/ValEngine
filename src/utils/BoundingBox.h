@@ -67,7 +67,7 @@ public:
 
 		gl::BufferPtr VBO(new gl::Buffer(gl::BufferTarget::ArrayBuffer));
 		VBO->setData(vertices);
-		VBO->setAttributes({ { 0, 3, GL_FLOAT, 0 } });
+		VBO->setAttributes({ { 0, 3, GL_FLOAT, sizeof(glm::vec3), 0 } });
 		gl::BufferPtr EBO(new gl::Buffer(gl::BufferTarget::ElementBuffer));
 
 		m_VAO.bindVertexBuffers({ VBO, EBO });

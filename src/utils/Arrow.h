@@ -17,7 +17,7 @@ public:
 
 		gl::BufferPtr VBO(new gl::Buffer(gl::BufferTarget::ArrayBuffer));
 		VBO->setData(completeCone);
-		VBO->setAttributes({ { 0, 3, GL_FLOAT, 0 } });
+		VBO->setAttributes({ { 0, 3, GL_FLOAT, sizeof(glm::vec3), 0 } });
 
 		m_VAO.bindVertexBuffer(VBO);
 	}

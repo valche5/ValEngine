@@ -176,6 +176,7 @@
     <ClCompile Include="src\core\MeshShader.cpp" />
     <ClCompile Include="src\core\Scene.cpp" />
     <ClCompile Include="src\core\SceneObject.cpp" />
+    <ClCompile Include="src\core\VBOFactory.cpp" />
     <ClCompile Include="src\glw\Buffer.cpp" />
     <ClCompile Include="src\glw\Shader.cpp" />
     <ClCompile Include="src\glw\ShaderProgram.cpp" />
@@ -231,6 +232,7 @@
     <ClInclude Include="GeneratedFiles\ui_enginetest.h" />
     <ClInclude Include="src\core\Camera.h" />
     <ClInclude Include="src\core\Engine.h" />
+    <ClInclude Include="src\core\IBOFactory.h" />
     <ClInclude Include="src\core\Light.h" />
     <ClInclude Include="src\core\Material.h" />
     <ClInclude Include="src\core\Mesh.h" />
@@ -241,6 +243,7 @@
     <ClInclude Include="src\core\SceneObject.h" />
     <ClInclude Include="src\core\ShaderConfiguration.h" />
     <ClInclude Include="src\core\Types.h" />
+    <ClInclude Include="src\core\VBOFactory.h" />
     <ClInclude Include="src\glw\Buffer.h" />
     <ClInclude Include="src\glw\GLObject.h" />
     <ClInclude Include="src\glw\Shader.h" />

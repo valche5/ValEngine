@@ -19,6 +19,7 @@ public:
 	void init();
 	void render();
 
+public:
 	SceneObject *getRootObject();
 	Camera *getCamera();
 	void reloadShaders();

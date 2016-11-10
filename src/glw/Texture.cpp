@@ -1,6 +1,7 @@
 #include "Texture.h"
 
-#include <soil/SOIL.h>
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb/stb_image.h>
 
 #include <iostream>
 
@@ -15,8 +16,6 @@ Texture::~Texture() {
 }
 
 void Texture::load(const std::string &path, GLenum min_filter, GLenum mag_filter, GLenum wrap_s, GLenum wrap_t) {
-	const char *image_path = path.c_str();
-
 	glBindTexture(GL_TEXTURE_2D, m_id);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap_s);	// Set texture wrapping to GL_REPEAT
@@ -25,16 +24,17 @@ void Texture::load(const std::string &path, GLenum min_filter, GLenum mag_filter
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, min_filter);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, mag_filter);
 
-	int width, height;
-	unsigned char* image = SOIL_load_image(image_path, &width, &height, 0, SOIL_LOAD_RGB);
+	int width, height, perPixComp;
+	const char *image_path = path.c_str();
+	unsigned char* image = stbi_load(image_path, &width, &height, &perPixComp, 3);
 	if (!image) {
-		std::cout << "ERROR::TEXTURE::LOADING_FAILED\n" << SOIL_last_result() << std::endl;
+		std::cout << "ERROR::TEXTURE::LOADING_FAILED\n" << stbi_failure_reason() << std::endl;
 	}
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
-	SOIL_free_image_data(image);
+	stbi_image_free(image);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 

@@ -1,14 +1,15 @@
 #include "ModelLoader.h"
 
 #include <core/Mesh.h>
+#include <core/VBOFactory.h>
+#include <core/IBOFactory.h>
 
 using std::cout;
 using std::endl;
 
 std::string ModelLoader::m_directory = "";
 
-ScenePtr ModelLoader::loadScene(const std::string & path)
-{
+ScenePtr ModelLoader::loadScene(const std::string & path) {
 	//Création de la scène
 	ScenePtr scene(new Scene);
 	SceneObject *rootObject = scene->getRootObject();
@@ -18,8 +19,7 @@ ScenePtr ModelLoader::loadScene(const std::string & path)
 	const aiScene *aiScene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
 	importer.ApplyPostProcessing(aiProcess_GenNormals);
 
-	if (!aiScene || aiScene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !aiScene->mRootNode)
-	{
+	if (!aiScene || aiScene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !aiScene->mRootNode) {
 		cout << "ERROR::ASSIMP::" << importer.GetErrorString() << endl;
 		return ScenePtr(nullptr);
 	}
@@ -27,13 +27,12 @@ ScenePtr ModelLoader::loadScene(const std::string & path)
 
 	processNode(aiScene, scene, aiScene->mRootNode, rootObject);
 	scene->setReady(true);
-	
+
 	importer.FreeScene();
 	return std::move(scene);
 }
 
-void ModelLoader::processNode(const aiScene *aiscene, ScenePtr &scene, aiNode * node, SceneObject *object)
-{
+void ModelLoader::processNode(const aiScene *aiscene, ScenePtr &scene, aiNode * node, SceneObject *object) {
 	//Mesh
 	object->meshes.reserve(node->mNumMeshes);
 	for (int i = 0; i < node->mNumMeshes; i++) {
@@ -66,56 +65,50 @@ void ModelLoader::processNode(const aiScene *aiscene, ScenePtr &scene, aiNode * 
 	object->bBox.initGL();
 }
 
-void ModelLoader::processMesh(const aiScene *aiscene, ScenePtr &scene, aiMesh * mesh, MeshPtr &glMesh)
-{
-	//Set shading
+void ModelLoader::processMesh(const aiScene *aiscene, ScenePtr &scene, aiMesh * mesh, MeshPtr &glMesh) {
+	//Properties
 	glMesh->shading = "phong";
-
-	glMesh->vertices.reserve(mesh->mNumVertices);
-	glMesh->indices.reserve(mesh->mNumFaces);
-
-	//Nom
 	glMesh->name = mesh->mName.C_Str();
+	glMesh->vertexCount = mesh->mNumVertices;
 
-	//Géométrie
-	for (int i = 0; i < mesh->mNumVertices; i++) {
-		Vertex vertex;
-		
-		//Position
-		vertex.Position = aiToGLM(mesh->mVertices[i]);
-		
-		//Bounding box
-		glMesh->bBox.fitWithAddingPoint(vertex.Position);
-		
-		//Normal
-		if (mesh->HasNormals()) {
-			vertex.Normal = aiToGLM(mesh->mNormals[i]);
-		} else {
-			vertex.Normal = glm::vec3(0);
-		}
-		
-		//Texture coords
-		if (mesh->mTextureCoords[0]) // Does the mesh contain texture coordinates?
-		{
-			glm::vec2 vec;
-			vec.x = mesh->mTextureCoords[0][i].x;
-			vec.y = mesh->mTextureCoords[0][i].y;
-			vertex.TexCoords = vec;
-		} else {
-			vertex.TexCoords = glm::vec2(0);
-		}
+	//Vertex geometry
+	VBOFactory vboFactory;
+	vboFactory.setVertexCount(mesh->mNumVertices);
 
-		glMesh->vertices.push_back(vertex);
+	//Position
+	vboFactory.setData(VertexPosition, &mesh->mVertices[0][0]);
+
+	//Normals
+	if (mesh->HasNormals()) {
+		vboFactory.setData(VertexNormal, &mesh->mNormals[0][0]);
 	}
-	glMesh->bBox.initGL();
-	
+
+	//Texture coords
+	std::vector<GLfloat> texCoords;
+	if (mesh->HasTextureCoords(0)) {
+		//Une petite correction s'impose Vec3 -> Vec2
+		texCoords.reserve(2 * mesh->mNumVertices);
+		for (int i = 0; i < mesh->mNumVertices; i++) {
+			texCoords.push_back(mesh->mTextureCoords[0][i].x);
+			texCoords.push_back(mesh->mTextureCoords[0][i].y);
+		}
+		vboFactory.setData(VertexTexCoord, &texCoords[0]);
+	}
+
+	IBOFactory iboFactory;
 	//Indices
-	for (GLuint i = 0; i < mesh->mNumFaces; i++)
-	{
+	std::vector<GLuint> indices;
+	indices.reserve(mesh->mNumFaces * 3);
+	for (GLuint i = 0; i < mesh->mNumFaces; i++) {
 		aiFace face = mesh->mFaces[i];
 		for (int j = 0; j < face.mNumIndices; j++)
-			glMesh->indices.push_back(face.mIndices[j]);
+			indices.push_back(face.mIndices[j]);
 	}
+	iboFactory.setData(&indices[0], indices.size());
+
+	//Set mesh VAO and VBO
+	glMesh->addVBO(vboFactory.getBlockVBO());
+	glMesh->addIBO(iboFactory.getIBO(), indices.size());
 
 	//Material
 	if (mesh->mMaterialIndex >= 0) {
@@ -155,16 +148,16 @@ void ModelLoader::processMesh(const aiScene *aiscene, ScenePtr &scene, aiMesh * 
 			loadTextures(scene, material, glMesh, aiTextureType_DIFFUSE, TextureType::Ambient);
 		}
 	}
-
-	glMesh->setupMesh();
 }
 
-void ModelLoader::loadTextures(ScenePtr &scene, aiMaterial * mat, MeshPtr &glMesh, aiTextureType aitype, TextureType type)
-{
+void ModelLoader::loadTextures(ScenePtr &scene, aiMaterial * mat, MeshPtr &glMesh, aiTextureType aitype, TextureType type) {
 	if (mat->GetTextureCount(aitype) > 0) {
 		aiString str;
 		mat->GetTexture(aitype, 0, &str);
 		std::string name = str.C_Str();
+		//Prevent loading of false textures
+		if (name.size() < 4)
+			return;
 
 		auto tex = scene->textures.find(name);
 		//La texture est elle déja chargée ?
@@ -172,19 +165,18 @@ void ModelLoader::loadTextures(ScenePtr &scene, aiMaterial * mat, MeshPtr &glMes
 			gl::TexturePtr texture(new gl::Texture);
 			texture->load(m_directory + "/" + str.C_Str());
 			texture->name = name;
-			auto inserted = scene->textures.insert({name, texture});
+			auto inserted = scene->textures.insert({ name, texture });
 			glMesh->material.addTexture(type, inserted.first->second);
 		} else {
 			glMesh->material.addTexture(type, tex->second);
 		}
 
 		glMesh->material.textureTypes |= type;
-		
+
 	}
 }
 
-glm::mat4 ModelLoader::aiToGLM(const aiMatrix4x4 & mat)
-{
+glm::mat4 ModelLoader::aiToGLM(const aiMatrix4x4 & mat) {
 	glm::mat4 gmat;
 
 	for (int i = 0; i < 4; i++) {
@@ -196,12 +188,10 @@ glm::mat4 ModelLoader::aiToGLM(const aiMatrix4x4 & mat)
 	return gmat;
 }
 
-glm::vec3 ModelLoader::aiToGLM(const aiVector3D & vec)
-{
+glm::vec3 ModelLoader::aiToGLM(const aiVector3D & vec) {
 	return glm::vec3(vec.x, vec.y, vec.z);
 }
 
-glm::vec3 ModelLoader::aiToGLM(const aiColor3D & color)
-{
+glm::vec3 ModelLoader::aiToGLM(const aiColor3D & color) {
 	return glm::vec3(color.r, color.g, color.b);
 }

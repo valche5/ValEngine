@@ -1,5 +1,7 @@
 #include "SceneObject.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 #include <utils/glmstreams.h>
 #include <glw/Texture.h>
 
@@ -28,7 +30,7 @@ std::string SceneObject::toString() {
 	}
 	result << space << "-Object " << name << std::endl;
 	for (auto &mesh : meshes) {
-		result << space << " -Mesh " << mesh->name << ", " << mesh->vertices.size() << " vertices, " << mesh->indices.size() << " indices" << std::endl;
+		result << space << " -Mesh " << mesh->name << ", " << mesh->vertexCount << " vertices, " << mesh->indiceCount << " indices" << std::endl;
 		Material &mat = mesh->material;
 		result << space << "  -Material " << mat.name << " shininess(" << mat.getProperty<float>(Shininess) << ") "
 			<< "ka" << mat.getProperty<glm::vec3>(Ka) << " "

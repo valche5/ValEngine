@@ -33,7 +33,7 @@ public:
 	virtual void setUniforms(const std::vector<SpotLight> &sLights) const = 0;
 
 	void use() const { m_program.use(); };
-	void reload() const { m_program.compile(); };
+	void reload() { m_program.compile(); fillUniformsLoc(); };
 
 	ShaderConfiguration configuration() const {
 		return m_configuration;

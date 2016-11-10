@@ -107,8 +107,8 @@ void Engine::loadScene(const std::string & path) {
 	m_camera->m_screenRatio = 800.f / 600.f;
 
 	m_scene->dirLights.push_back(DirLight());
-	//PointLight light(glm::vec3(0.58, -2.74, 0.033));
-	//m_scene->pointLights.push_back(light);
+	PointLight light(glm::vec3(0, 3, 0));
+	m_scene->pointLights.push_back(light);
 
 	//SpotLight slight;
 	//m_scene->spotLights.push_back(slight);

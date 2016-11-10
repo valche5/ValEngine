@@ -128,6 +128,9 @@
     <ClCompile Include="src\core\MeshShader.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
+    <ClCompile Include="src\core\VBOFactory.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\gui\enginetest.qrc">
@@ -217,6 +220,12 @@
       <Filter>Header Files\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\core\MeshShader.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\VBOFactory.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core\IBOFactory.h">
       <Filter>Header Files\Core</Filter>
     </ClInclude>
   </ItemGroup>
