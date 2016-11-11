@@ -55,4 +55,8 @@ void ShaderProgram::setUniform(GLuint loc, GLuint u1i) const {
 	glUniform1i(loc, u1i);
 }
 
+GLuint ShaderProgram::getUniformLoc(const char * name) {
+	return glGetUniformLocation(m_id, name);
+}
+
 }

@@ -79,7 +79,14 @@
     <addaction name="actionOuvrir"/>
     <addaction name="actionFermer"/>
    </widget>
+   <widget class="QMenu" name="menuVue">
+    <property name="title">
+     <string>Vue</string>
+    </property>
+    <addaction name="actionCentrer"/>
+   </widget>
    <addaction name="menuFichier"/>
+   <addaction name="menuVue"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOuvrir">
@@ -90,6 +97,11 @@
   <action name="actionFermer">
    <property name="text">
     <string>Fermer</string>
+   </property>
+  </action>
+  <action name="actionCentrer">
+   <property name="text">
+    <string>Centrer</string>
    </property>
   </action>
  </widget>

@@ -1,14 +1,19 @@
 #include "Scene.h"
 
+#include <limits>
 #include <memory>
+#include <cmath>
+#include <utils/Glmstreams.h>
 
 Scene::Scene() : rootObject(new SceneObject), m_camera(new Camera(glm::vec3(0, 0, 5))) {
 	rootObject->parent = nullptr;
 }
 
 void Scene::init() {
-	if (m_ready)
+	if (m_ready) {
 		computeShaders();
+		centerCamera();
+	}
 
 	gl::ShaderPtr vertex(new gl::Shader(gl::ShaderType::Vertex));
 	gl::ShaderPtr fragment(new gl::Shader(gl::ShaderType::Fragment));
@@ -33,6 +38,10 @@ void Scene::reloadShaders() {
 	}
 }
 
+void Scene::centerCamera() {
+	m_camera->centerOnAABB(rootObject->bBox);
+}
+
 void Scene::setReady(bool ready) {
 	m_ready = ready;
 }
@@ -42,18 +51,16 @@ void Scene::computeShaders() {
 }
 
 void Scene::computeShaders(const SceneObjectPtr &node) {
-	ShaderConfiguration conf;
-	conf.nDirLight = dirLights.size();
-	conf.nSpotLight = spotLights.size();
-	conf.nPointLight = pointLights.size();
-
 	for (auto &mesh : node->meshes) {
-		conf.textureTypes = mesh->material.textureTypes;
-		conf.name = mesh->shading;
 		//Le shader n'existe pas, on l'ajoute
-		if (shaders.find(conf) == shaders.end()) {
-			shaders.insert({ conf, MeshShaderPtr(new LightingShader(conf)) });
-			shaders.at(conf)->init();
+		if (shaders.find(mesh->shaderConf) == shaders.end()) {
+			if (mesh->shaderConf.shadingType == "lighting") {
+				shaders.insert({ mesh->shaderConf, MeshShaderPtr(new LightingShader(pointLights.size(), spotLights.size(), dirLights.size())) });
+				shaders.at(mesh->shaderConf)->setConfiguration(mesh->shaderConf);
+			} else if (mesh->shaderConf.shadingType == "fill") {
+				shaders.insert({ mesh->shaderConf, MeshShaderPtr(new FillShader) });
+				shaders.at(mesh->shaderConf)->setConfiguration(mesh->shaderConf);
+			}
 		}
 	}
 
@@ -64,11 +71,13 @@ void Scene::computeShaders(const SceneObjectPtr &node) {
 
 void Scene::renderAABB(const SceneObjectPtr & node, const gl::ShaderProgram &program, glm::mat4 accTransform) {
 	accTransform = node->transform * accTransform;
-	program.setUniform("model", accTransform);
 	for (auto &mesh : node->meshes) {
-		mesh->bBox.draw();
+		accTransform = glm::translate(accTransform, mesh->bBox.getCenter());
+		accTransform = glm::scale(accTransform, mesh->bBox.getSize());
+		program.setUniform("model", accTransform);
+		m_aabb.draw();
 	}
-	node->bBox.draw();
+	//node->bBox.draw();
 	for (auto &child : node->childs) {
 		renderAABB(child, program, accTransform);
 	}
@@ -78,8 +87,7 @@ void Scene::renderNode(const SceneObjectPtr & node, const MeshShaderPtr &shader,
 	accTransform = node->transform * accTransform;
 	bool uSet = false;
 	for (auto &mesh : node->meshes) {
-		if (mesh->shading == configuration.name
-			&& mesh->material.textureTypes == configuration.textureTypes) {
+		if (mesh->shaderConf == configuration) {
 			if (!uSet) {
 				shader->setUniforms(accTransform);
 				uSet = true;
@@ -133,7 +141,7 @@ void Scene::render() {
 	m_arrowShader.setUniform("fillColor", glm::vec3(1, 0, 0));
 	m_arrow.draw();
 
-	if (0) {
+	if (1) {
 		m_arrowShader.setUniform("fillColor", glm::vec3(0.4, 1, 0.4));
 		renderAABB(rootObject, m_arrowShader, glm::mat4());
 	}

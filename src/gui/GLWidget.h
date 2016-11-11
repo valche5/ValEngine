@@ -15,6 +15,7 @@ public:
 public slots:
 	void openScene();
 	void closeScene();
+	void centerScene();
 
 protected:
 	void initializeGL();

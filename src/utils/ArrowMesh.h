@@ -1,35 +1,37 @@
-#ifndef ARROW_H
-#define ARROW_H
+#ifndef ARROWMESH_H
+#define ARROWMESH_H
 
 #include <vector>
 
 #include <glm/glm.hpp>
 
-#include <core/openGL.h>
-#include <glw/VertexArray.h>
+#include <core/Mesh.h>
 
-class Arrow {
+class ArrowMesh : public Mesh {
 public:
-	Arrow() {
+	ArrowMesh() {
+		//Compute the cone mesh
 		n = 20;
 		std::vector<glm::vec3> completeCone = getCone(glm::vec3(0, 0, 1), glm::vec3(0, 0, 1), 0.1, 0.04, n);
 		completeCone.insert(completeCone.begin(), { glm::vec3(0, 0, 0), glm::vec3(0, 0, 0.9) });
 
-		gl::BufferPtr VBO(new gl::Buffer(gl::BufferTarget::ArrayBuffer));
-		VBO->setData(completeCone);
-		VBO->setAttributes({ { 0, 3, GL_FLOAT, sizeof(glm::vec3), 0 } });
+		//Construct VBO
+		VBOFactory vbo;
+		vbo.setVertexCount(completeCone.size());
+		vbo.setData(VertexPosition, &completeCone[0][0]);
+		
+		addVBO(vbo.getBlockVBO());
 
-		m_VAO.bindVertexBuffer(VBO);
-	}
-	~Arrow() {
+		shaderConf.shadingType = "fill";
+		material.addProperty(FillColor, glm::vec3(1, 0, 0));
 	}
 
-	void draw() {
-		m_VAO.bind();
+	virtual void draw() const {
+		bindVAO();
 		glDrawArrays(GL_LINES, 0, 2);
 		glDrawArrays(GL_TRIANGLE_FAN, 2, n + 2);
 		glDrawArrays(GL_TRIANGLE_FAN, n + 4, n + 2);
-		m_VAO.unbind();
+		unbindVAO();
 	}
 
 	glm::vec3 perp(const glm::vec3 &v) {
@@ -89,7 +91,6 @@ public:
 	}
 private:
 	int n;
-	gl::VertexArray m_VAO;
 };
 
 #endif // ARROW_H

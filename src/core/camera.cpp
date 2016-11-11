@@ -1,7 +1,9 @@
 #include "Camera.h"
 
+#include <utils/Glmstreams.h>
+
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch)
-    : m_front(glm::vec3(0.0f, 0.0f, -1.0f)), m_movementSpeed(SPEED), m_mouseSensitivity(SENSITIVTY), m_zoom(ZOOM), m_direction(NONE)
+    : m_front(glm::vec3(0.0f, 0.0f, -1.0f)), m_movementSpeed(SPEED), m_mouseSensitivity(SENSITIVTY), m_fovy(ZOOM), m_direction(NONE)
 {
     m_offsetBufferEnd = 0;
     m_position = position;
@@ -13,7 +15,7 @@ Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch)
 }
 // Constructor with scalar values
 Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch)
-    : m_front(glm::vec3(0.0f, 0.0f, -1.0f)), m_movementSpeed(SPEED), m_mouseSensitivity(SENSITIVTY), m_zoom(ZOOM)
+    : m_front(glm::vec3(0.0f, 0.0f, -1.0f)), m_movementSpeed(SPEED), m_mouseSensitivity(SENSITIVTY), m_fovy(ZOOM)
 {
     m_position = glm::vec3(posX, posY, posZ);
     m_worldUp = glm::vec3(upX, upY, upZ);
@@ -30,7 +32,34 @@ glm::mat4 Camera::getViewMatrix() const
 }
 
 glm::mat4 Camera::getProjection() const {
-	return glm::perspective(glm::radians(m_zoom), m_screenRatio, m_near, m_far);
+	return glm::perspective(glm::radians(m_fovy), m_screenRatio, m_near, m_far);
+}
+
+void Camera::centerOnAABB(const AABB & bBox) {
+	glm::vec3 max = bBox.max;
+	glm::vec3 center = bBox.getCenter();
+	glm::vec3 maxCentered = max - center;
+	float radius = glm::length(maxCentered);
+	float extRadius = radius;
+
+	float tanHalfFovy = tan(glm::radians(m_fovy) / 2.f);
+	float tanHalfFovx = tanHalfFovy * m_screenRatio;
+	float ry = extRadius / tanHalfFovy;
+	float rx = extRadius / tanHalfFovx;
+	float camRadius = std::max(ry, rx);
+	// TODO: Si camRadius > Far, peut être faire un scale sur le modèle pour qu'il puisse être affiché complétement
+	glm::vec3 camPos = -camRadius * glm::normalize(m_front) + center;
+
+	m_position = camPos;
+	m_movementSpeed = camRadius / 3.f;
+
+	std::cout << "Camera position : " << camPos << std::endl;
+
+	//Pour que le centre de l'objet soit au centre du NDC
+	//glm::vec3 centre = rootObject->bBox.getCenter();
+	//m_camera->m_position.x = centre.x;
+	//m_camera->m_position.y = centre.y;
+	//m_camera->m_position.z = ((f - n) / (-f - n))*(-centre.z * f - centre.z * n - 2 * f * n);
 }
 
 void Camera::update(float dt)
@@ -200,12 +229,12 @@ void Camera::processMouseMove(int mouseX, int mouseY)
 }
 
 void Camera::processMouseScroll(float yoffset) {
-	if (m_zoom >= 1.0f && m_zoom <= 45.0f)
-		m_zoom -= yoffset * 0.1;
-	if (m_zoom <= 1.0f)
-		m_zoom = 1.0f;
-	if (m_zoom >= 45.0f)
-		m_zoom = 45.0f;
+	if (m_fovy >= 1.0f && m_fovy <= 45.0f)
+		m_fovy -= yoffset * 0.1;
+	if (m_fovy <= 1.0f)
+		m_fovy = 1.0f;
+	if (m_fovy >= 45.0f)
+		m_fovy = 45.0f;
 }
 
 void Camera::setMouseOffsetBufferSize(size_t size) {

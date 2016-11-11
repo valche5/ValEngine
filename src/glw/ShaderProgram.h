@@ -34,6 +34,8 @@ public:
 	void setUniform(GLuint loc, GLfloat u1f) const;
 	void setUniform(GLuint loc, GLuint u1i) const;
 
+	GLuint getUniformLoc(const char *name);
+
 protected:
 	std::unordered_map<ShaderType, ShaderPtr> m_shaders;
 };

@@ -226,3 +226,7 @@ void GLWidget::closeScene() {
 	m_camera = m_engine->camera();
 	doneCurrent();
 }
+
+void GLWidget::centerScene() {
+	m_engine->centerScene();
+}

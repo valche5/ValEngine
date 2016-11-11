@@ -24,6 +24,7 @@ public:
 
 	void loadDefaultScene();
 	void loadScene(const std::string &path);
+	void centerScene();
 
 	void reloadShaders();
 	void setWireframe(bool enable);

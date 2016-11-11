@@ -19,6 +19,8 @@ private:
 	static void processMesh(const aiScene *aiscene, ScenePtr &scene, aiMesh* mesh, MeshPtr &glMesh);
 	static void loadTextures(ScenePtr &scene, aiMaterial* mat, MeshPtr &glMesh, aiTextureType aitype, TextureType type);
 
+	static void computeAABB(aiMesh *mesh, AABB &bBox);
+
 	static std::string m_directory;
 
 	static glm::mat4 aiToGLM(const aiMatrix4x4 &mat);

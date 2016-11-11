@@ -37,7 +37,7 @@ void ModelLoader::processNode(const aiScene *aiscene, ScenePtr &scene, aiNode * 
 	object->meshes.reserve(node->mNumMeshes);
 	for (int i = 0; i < node->mNumMeshes; i++) {
 		aiMesh *mesh = aiscene->mMeshes[node->mMeshes[i]];
-		object->meshes.push_back(MeshPtr(new Mesh));
+		object->meshes.push_back(MeshPtr(new ModelMesh));
 		processMesh(aiscene, scene, mesh, object->meshes.back());
 
 		//Bounding box
@@ -61,13 +61,12 @@ void ModelLoader::processNode(const aiScene *aiscene, ScenePtr &scene, aiNode * 
 		//Bounding Box
 		object->bBox.fitWithAddingBbox(newObject->bBox);
 	}
-
-	object->bBox.initGL();
 }
 
 void ModelLoader::processMesh(const aiScene *aiscene, ScenePtr &scene, aiMesh * mesh, MeshPtr &glMesh) {
 	//Properties
-	glMesh->shading = "phong";
+	glMesh->shaderConf.shadingType = "lighting";
+	glMesh->shaderConf.lightingFct = "phong";
 	glMesh->name = mesh->mName.C_Str();
 	glMesh->vertexCount = mesh->mNumVertices;
 
@@ -106,9 +105,12 @@ void ModelLoader::processMesh(const aiScene *aiscene, ScenePtr &scene, aiMesh * 
 	}
 	iboFactory.setData(&indices[0], indices.size());
 
-	//Set mesh VAO and VBO
+	//Set mesh VBO and IBO
 	glMesh->addVBO(vboFactory.getBlockVBO());
 	glMesh->addIBO(iboFactory.getIBO(), indices.size());
+
+	//Compute AABB
+	computeAABB(mesh, glMesh->bBox);
 
 	//Material
 	if (mesh->mMaterialIndex >= 0) {
@@ -163,16 +165,22 @@ void ModelLoader::loadTextures(ScenePtr &scene, aiMaterial * mat, MeshPtr &glMes
 		//La texture est elle déja chargée ?
 		if (tex == scene->textures.end()) {
 			gl::TexturePtr texture(new gl::Texture);
-			texture->load(m_directory + "/" + str.C_Str());
-			texture->name = name;
-			auto inserted = scene->textures.insert({ name, texture });
-			glMesh->material.addTexture(type, inserted.first->second);
+			if (texture->load(m_directory + "/" + str.C_Str())) {
+				texture->name = name;
+				auto inserted = scene->textures.insert({ name, texture });
+				glMesh->material.addTexture(type, inserted.first->second);
+				glMesh->shaderConf.textureTypes |= type;
+			}
 		} else {
 			glMesh->material.addTexture(type, tex->second);
+			glMesh->shaderConf.textureTypes |= type;
 		}
+	}
+}
 
-		glMesh->material.textureTypes |= type;
-
+void ModelLoader::computeAABB(aiMesh * mesh, AABB & bBox) {
+	for (int i = 0; i < mesh->mNumVertices; i++) {
+		bBox.fitWithAddingPoint(aiToGLM(mesh->mVertices[i]));
 	}
 }
 

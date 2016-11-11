@@ -14,7 +14,14 @@ public:
 public:
 	Texture();
 	~Texture();
-	void load(const std::string &path,
+	void load(unsigned char *image,
+			  int width,
+			  int height,
+			  GLenum min_filter = GL_LINEAR,
+			  GLenum mag_filter = GL_LINEAR,
+			  GLenum wrap_s = GL_REPEAT,
+			  GLenum wrap_t = GL_REPEAT);
+	bool load(const std::string &path,
 			  GLenum min_filter = GL_LINEAR,
 			  GLenum mag_filter = GL_LINEAR,
 			  GLenum wrap_s = GL_REPEAT,

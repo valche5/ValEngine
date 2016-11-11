@@ -180,9 +180,6 @@
     <ClInclude Include="src\utils\File.h">
       <Filter>Header Files\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="src\utils\Arrow.h">
-      <Filter>Header Files\Utils</Filter>
-    </ClInclude>
     <ClInclude Include="src\utils\BoundingBox.h">
       <Filter>Header Files\Utils</Filter>
     </ClInclude>
@@ -227,6 +224,12 @@
     </ClInclude>
     <ClInclude Include="src\core\IBOFactory.h">
       <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\ArrowMesh.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\AABBMesh.h">
+      <Filter>Header Files\Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

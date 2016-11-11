@@ -3,6 +3,7 @@
 
 #include <unordered_map>
 #include <vector>
+#include <initializer_list>
 
 #include <glw/GLObject.h>
 #include <glw/Types.h>
@@ -16,7 +17,7 @@ public:
 	~VertexArray();
 
 	void bindVertexBuffer(BufferPtr buffer);
-	void bindVertexBuffers(const std::vector<BufferPtr> &buffers);
+	void bindVertexBuffer(std::initializer_list<BufferPtr> buffers);
 
 	void bind() const;
 	void unbind() const;

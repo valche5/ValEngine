@@ -251,6 +251,7 @@
     <ClInclude Include="src\glw\Texture.h" />
     <ClInclude Include="src\glw\Types.h" />
     <ClInclude Include="src\glw\VertexArray.h" />
+    <ClInclude Include="src\utils\AABBMesh.h" />
     <ClInclude Include="src\utils\Glmstreams.h" />
     <CustomBuild Include="src\gui\GLWidget.h">
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
@@ -270,7 +271,7 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_DLL -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_HELP_LIB -DQT_OPENGL_LIB -DQT_WIDGETS_LIB  "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtHelp" "-I$(QTDIR)\include\QtOpenGL" "-I$(QTDIR)\include\QtWidgets" "-I.\libraries\include" "-I.\src\%(AdditionalIncludeDirectories)\." "-I$(NOINHERIT)\."</Command>
     </CustomBuild>
-    <ClInclude Include="src\utils\Arrow.h" />
+    <ClInclude Include="src\utils\ArrowMesh.h" />
     <ClInclude Include="src\utils\BoundingBox.h" />
     <ClInclude Include="src\utils\DebugMessage.h" />
     <ClInclude Include="src\utils\File.h" />

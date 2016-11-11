@@ -11,7 +11,8 @@
 #include <core/Types.h>
 #include <glw/Texture.h>
 #include <glw/ShaderProgram.h>
-#include <utils/Arrow.h>
+#include <utils/ArrowMesh.h>
+#include <utils/AABBMesh.h>
 
 class Scene {
 public:
@@ -23,6 +24,8 @@ public:
 	SceneObject *getRootObject();
 	Camera *getCamera();
 	void reloadShaders();
+
+	void centerCamera();
 
 	std::string toString() {
 		return rootObject->toString();
@@ -48,7 +51,8 @@ private:
 
 	std::unordered_map<std::string, MeshShaderPtr> shaders;
 
-	Arrow m_arrow;
+	ArrowMesh m_arrow;
+	AABBMesh m_aabb;
 	gl::ShaderProgram m_arrowShader;
 };
 

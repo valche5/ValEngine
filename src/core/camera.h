@@ -6,6 +6,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <utils/BoundingBox.h>
 
 class Camera;
 
@@ -62,7 +63,7 @@ public:
     // Camera options
     float m_movementSpeed;
     float m_mouseSensitivity;
-    float m_zoom;
+    float m_fovy;
     Direction m_direction;
 
     // Constructor with vectors
@@ -74,6 +75,9 @@ public:
     glm::mat4 getViewMatrix() const;
 	// Returns the projection matrix
 	glm::mat4 getProjection() const;
+
+	//Centre la caméra sur une bounding box
+	void centerOnAABB(const AABB &bBox);
 
     void update(float dt);
 

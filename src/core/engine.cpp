@@ -116,6 +116,10 @@ void Engine::loadScene(const std::string & path) {
 	m_scene->init();
 }
 
+void Engine::centerScene() {
+	m_scene->centerCamera();
+}
+
 void Engine::reloadShaders()
 {
 	m_scene->reloadShaders();

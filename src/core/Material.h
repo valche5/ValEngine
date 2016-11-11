@@ -25,7 +25,7 @@ const std::unordered_map<TextureType, std::string> textureTypeString({
 });
 
 enum MaterialProperty {
-	Ka, Kd, Ks, Shininess
+	Ka, Kd, Ks, Shininess, FillColor
 };
 
 class Material {
@@ -34,6 +34,7 @@ public:
 	TextureTypes textureTypes = 0x00;
 public:
 	void addTexture(TextureType type, gl::TexturePtr texture) {
+		textureTypes |= type;
 		m_textures.insert({ type, texture });
 	}
 

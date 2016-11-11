@@ -23,7 +23,7 @@ void VertexArray::bindVertexBuffer(BufferPtr buffer) {
 	glBindVertexArray(0);
 }
 
-void VertexArray::bindVertexBuffers(const std::vector<BufferPtr> &buffers) {
+void VertexArray::bindVertexBuffer(std::initializer_list<BufferPtr> buffers) {
 	glBindVertexArray(m_id);
 	for (auto &buffer : buffers) {
 		m_buffers.push_back(buffer);

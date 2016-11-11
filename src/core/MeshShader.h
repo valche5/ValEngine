@@ -11,18 +11,19 @@
 
 class MeshShader {
 public:
-	MeshShader(const ShaderConfiguration &configuration)
-		: m_configuration(configuration), m_vertex(new gl::Shader(gl::ShaderType::Vertex))
+	MeshShader()
+		: m_vertex(new gl::Shader(gl::ShaderType::Vertex))
 		, m_fragment(new gl::Shader(gl::ShaderType::Fragment))
 	{}
 	virtual ~MeshShader() {};
 
-	void init() {
+	void setConfiguration(const ShaderConfiguration &configuration) {
+		m_configuration = configuration;
 		m_program.attach(m_vertex);
 		m_program.attach(m_fragment);
-		load();
+		loadShaders(m_vertex, m_fragment, m_configuration);
 		m_program.compile();
-		fillUniformsLoc();
+		fillUniformsLoc(m_program, m_configuration);
 	};
 
 	virtual void setUniforms(const Camera &camera) const = 0;
@@ -33,14 +34,14 @@ public:
 	virtual void setUniforms(const std::vector<SpotLight> &sLights) const = 0;
 
 	void use() const { m_program.use(); };
-	void reload() { m_program.compile(); fillUniformsLoc(); };
+	void reload() { m_program.compile(); fillUniformsLoc(m_program, m_configuration); };
 
 	ShaderConfiguration configuration() const {
 		return m_configuration;
 	}
 protected:
-	virtual void load() = 0;
-	virtual void fillUniformsLoc() = 0;
+	virtual void loadShaders(gl::ShaderPtr vertex, gl::ShaderPtr fragment, const ShaderConfiguration &configuration) = 0;
+	virtual void fillUniformsLoc(gl::ShaderProgram &program, const ShaderConfiguration &configuration) = 0;
 
 protected:
 	//ShaderProgram
@@ -50,6 +51,28 @@ protected:
 
 	//Configuration
 	ShaderConfiguration m_configuration;
+};
+
+class FillShader : public MeshShader {
+public:
+	virtual void setUniforms(const Camera & camera) const;
+	virtual void setUniforms(const glm::mat4 & model) const;
+	virtual void setUniforms(const Material & mat) const;
+	virtual void setUniforms(const std::vector<PointLight>& pLights) const;
+	virtual void setUniforms(const std::vector<DirLight>& dLights) const;
+	virtual void setUniforms(const std::vector<SpotLight>& sLights) const;
+protected:
+	virtual void loadShaders(gl::ShaderPtr vertex, gl::ShaderPtr fragment, const ShaderConfiguration &configuration);
+	virtual void fillUniformsLoc(gl::ShaderProgram &program, const ShaderConfiguration &configuration);
+
+private:
+	//Vertex Shader
+	GLuint m_uModel;
+	GLuint m_uView;
+	GLuint m_uProjection;
+
+	//Fragment Shader
+	GLuint m_uFillColor;
 };
 
 struct uPointLight {
@@ -84,8 +107,9 @@ struct uSpotLight {
 
 class LightingShader : public MeshShader {
 public:
-	LightingShader(const ShaderConfiguration &conf)
-		: MeshShader(conf) {};
+	LightingShader(int nPointLight, int nSpotLight, int nDirLight)
+		: m_nPointLight(nPointLight), m_nSpotLight(nSpotLight), m_nDirLight(nDirLight) {
+	};
 
 	virtual void setUniforms(const Camera &camera) const;
 	virtual void setUniforms(const glm::mat4 &model) const;
@@ -94,10 +118,11 @@ public:
 	virtual void setUniforms(const std::vector<DirLight> &dLights) const;
 	virtual void setUniforms(const std::vector<SpotLight> &sLights) const;
 protected:
-	virtual void load();
-	virtual void fillUniformsLoc();
+	virtual void loadShaders(gl::ShaderPtr vertex, gl::ShaderPtr fragment, const ShaderConfiguration &configuration);
+	virtual void fillUniformsLoc(gl::ShaderProgram &program, const ShaderConfiguration &configuration);
 
 private:
+	int m_nPointLight, m_nDirLight, m_nSpotLight;
 	//Vertex Shader
 	GLuint m_uModel;
 	GLuint m_uNormalModel;

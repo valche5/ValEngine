@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 	connect(ui.actionOuvrir, &QAction::triggered, ui.widget, &GLWidget::openScene);
 	connect(ui.actionFermer, &QAction::triggered, ui.widget, &GLWidget::closeScene);
+	connect(ui.actionCentrer, &QAction::triggered, ui.widget, &GLWidget::centerScene);
 }
 
 MainWindow::~MainWindow()
