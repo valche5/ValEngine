@@ -31,35 +31,71 @@ glm::mat4 Camera::getViewMatrix() const
     return glm::lookAt(m_position, m_position + m_front, m_up);
 }
 
-glm::mat4 Camera::getProjection() const {
-	return glm::perspective(glm::radians(m_fovy), m_screenRatio, m_near, m_far);
+const glm::mat4 &Camera::getProjection() const {
+	return m_projection;
 }
 
-void Camera::centerOnAABB(const AABB & bBox) {
+void Camera::setScreenSize(int width, int height) {
+	m_screenWidth = width;
+	m_screenHeight = height;
+	m_screenRatio = width / (float) height;
+	calcProjection();
+}
+
+void Camera::calcProjection() {
+	float w = m_fr * m_screenWidth;
+	float h = m_fr * m_screenHeight;
+	float n = m_fz * m_zoom;
+	float f = m_far;
+
+	m_projection[0][0] = 2 * n / w;
+	m_projection[1][1] = 2 * n / h;
+	m_projection[2][2] = (f + n) / (n - f);
+	m_projection[2][3] = -1;
+	m_projection[3][2] = (2 * f*n) / (n - f);
+
+	m_tanHalfFovy = h / (2 * n);
+}
+
+void Camera::centerOnAABB(const AABB & bBox, const glm::vec3 &dir) {
+	glm::vec3 front;
+	if (dir == glm::vec3(0)) {
+		front = m_front;
+	} else {
+		//Update Yaw and pitch
+		front = dir;
+		if (dir.y != 0) {
+			m_yaw = 90;
+			m_pitch = dir.y * 89;
+		} else {
+			if (dir.x == 1) {
+				m_yaw = 0;
+			} else {
+				m_yaw = 90 * dir.z + 180 * dir.x;
+			}
+			m_pitch = 0;
+		}
+		updateCameraVectors();
+	}
 	glm::vec3 max = bBox.max;
 	glm::vec3 center = bBox.getCenter();
 	glm::vec3 maxCentered = max - center;
 	float radius = glm::length(maxCentered);
 	float extRadius = radius;
 
-	float tanHalfFovy = tan(glm::radians(m_fovy) / 2.f);
+	float tanHalfFovy = m_tanHalfFovy;
 	float tanHalfFovx = tanHalfFovy * m_screenRatio;
 	float ry = extRadius / tanHalfFovy;
 	float rx = extRadius / tanHalfFovx;
 	float camRadius = std::max(ry, rx);
 	// TODO: Si camRadius > Far, peut être faire un scale sur le modèle pour qu'il puisse être affiché complétement
-	glm::vec3 camPos = -camRadius * glm::normalize(m_front) + center;
+	glm::vec3 camPos = -camRadius * glm::normalize(front) + center;
 
 	m_position = camPos;
 	m_movementSpeed = camRadius / 3.f;
 
-	std::cout << "Camera position : " << camPos << std::endl;
 
-	//Pour que le centre de l'objet soit au centre du NDC
-	//glm::vec3 centre = rootObject->bBox.getCenter();
-	//m_camera->m_position.x = centre.x;
-	//m_camera->m_position.y = centre.y;
-	//m_camera->m_position.z = ((f - n) / (-f - n))*(-centre.z * f - centre.z * n - 2 * f * n);
+	std::cout << "Camera position : " << camPos << std::endl;
 }
 
 void Camera::update(float dt)
@@ -229,12 +265,15 @@ void Camera::processMouseMove(int mouseX, int mouseY)
 }
 
 void Camera::processMouseScroll(float yoffset) {
-	if (m_fovy >= 1.0f && m_fovy <= 45.0f)
-		m_fovy -= yoffset * 0.1;
-	if (m_fovy <= 1.0f)
-		m_fovy = 1.0f;
-	if (m_fovy >= 45.0f)
-		m_fovy = 45.0f;
+	//std::cout << "Zoom: " << m_zoom << ", delta: " << delta << std::endl;
+	if (m_zoom >= 1.0f && m_zoom <= 19.0f)
+		m_zoom += yoffset * std::log((21.0f - m_zoom))  * 0.001;
+	if (m_zoom <= 1.0f)
+		m_zoom = 1.0f;
+	if (m_zoom >= 19.0f)
+		m_zoom = 19.0f;
+
+	calcProjection();
 }
 
 void Camera::setMouseOffsetBufferSize(size_t size) {
@@ -245,6 +284,7 @@ void Camera::setMouseOffsetBufferSize(size_t size) {
 // Calculates the front vector from the Camera's (updated) Eular Angles
 void Camera::updateCameraVectors()
 {
+	std::cout << "yaw: " << m_yaw << ", pitch" << m_pitch << std::endl;
     // Calculate the new Front vector
     glm::vec3 front;
     front.x = cos(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));

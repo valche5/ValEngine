@@ -24,7 +24,7 @@ public:
 
 	void loadDefaultScene();
 	void loadScene(const std::string &path);
-	void centerScene();
+	void centerScene(const glm::vec3 &dir = glm::vec3(0));
 
 	void reloadShaders();
 	void setWireframe(bool enable);
@@ -33,6 +33,8 @@ private:
 	unsigned int m_VAO;
 
 	timepoint m_lastFrameTime;
+
+	glm::vec3 m_screenSize;
 
 	std::unique_ptr<Scene> m_scene;
 	Camera *m_camera;

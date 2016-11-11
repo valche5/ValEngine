@@ -76,8 +76,10 @@ void Engine::paint()
 
 void Engine::resize(int w, int h)
 {
-	glViewport(0, 0, h, w);
-	m_camera->m_screenRatio = (float) w / (float) h;
+	glViewport(0, 0, w, h);
+	m_screenSize.x = w;
+	m_screenSize.y = h;
+	m_camera->setScreenSize(w, h);
 }
 
 void Engine::clean()
@@ -104,7 +106,7 @@ void Engine::loadScene(const std::string & path) {
 	cout << "Scene Center : (" << center.x << "," << center.y << "," << center.z << ")" << endl;
 
 	m_camera = m_scene->getCamera();
-	m_camera->m_screenRatio = 800.f / 600.f;
+	m_camera->setScreenSize(m_screenSize.x, m_screenSize.y);
 
 	m_scene->dirLights.push_back(DirLight());
 	PointLight light(glm::vec3(0, 3, 0));
@@ -116,8 +118,8 @@ void Engine::loadScene(const std::string & path) {
 	m_scene->init();
 }
 
-void Engine::centerScene() {
-	m_scene->centerCamera();
+void Engine::centerScene(const glm::vec3 &dir) {
+	m_camera->centerOnAABB(m_scene->getRootObject()->bBox, dir);
 }
 
 void Engine::reloadShaders()

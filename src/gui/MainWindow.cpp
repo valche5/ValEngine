@@ -12,7 +12,13 @@ MainWindow::MainWindow(QWidget *parent)
 
 	connect(ui.actionOuvrir, &QAction::triggered, ui.widget, &GLWidget::openScene);
 	connect(ui.actionFermer, &QAction::triggered, ui.widget, &GLWidget::closeScene);
-	connect(ui.actionCentrer, &QAction::triggered, ui.widget, &GLWidget::centerScene);
+	connect(ui.actionCentrer, &QAction::triggered, [this]() { ui.widget->centerScene();  });
+	connect(ui.actionFront, &QAction::triggered, [this]() { ui.widget->centerScene(glm::vec3(0, 0, -1));  });
+	connect(ui.actionRight, &QAction::triggered, [this]() { ui.widget->centerScene(glm::vec3(-1, 0, 0));  });
+	connect(ui.actionLeft, &QAction::triggered, [this]() { ui.widget->centerScene(glm::vec3(1, 0, 0));  });
+	connect(ui.actionTop, &QAction::triggered, [this]() { ui.widget->centerScene(glm::vec3(0, -1, 0));  });
+	connect(ui.actionBottom, &QAction::triggered, [this]() { ui.widget->centerScene(glm::vec3(0, 1, 0));  });
+	connect(ui.actiobBack, &QAction::triggered, [this]() { ui.widget->centerScene(glm::vec3(0, 0, 1));  });
 }
 
 MainWindow::~MainWindow()

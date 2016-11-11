@@ -158,10 +158,6 @@ void GLWidget::wheelEvent(QWheelEvent *e) {
 	m_camera->processMouseScroll(e->delta());
 }
 
-void GLWidget::resizeEvent(QResizeEvent *e) {
-
-}
-
 void GLWidget::openScene() {
 	QSettings settings("ValCompany", "ValRenderer");
 	QString path;
@@ -227,6 +223,6 @@ void GLWidget::closeScene() {
 	doneCurrent();
 }
 
-void GLWidget::centerScene() {
-	m_engine->centerScene();
+void GLWidget::centerScene(const glm::vec3 &dir) {
+	m_engine->centerScene(dir);
 }

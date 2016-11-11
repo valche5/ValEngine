@@ -54,9 +54,17 @@ public:
     glm::vec3 m_up;
     glm::vec3 m_right;
     glm::vec3 m_worldUp;
-	float m_screenRatio = 800.f / 600.f;
-	float m_near = 0.1;
+	// Camera Perspective
+	const float m_fr = 1.3807118e-04;
+	const float m_fz = 0.1;
+	float m_screenRatio;
+	float m_screenWidth = 800.f;
+	float m_screenHeight = 600.f;
+	float m_zoom = 1.f;
+	float m_near = 0.1; // TODO : Remove
 	float m_far = 100;
+	float m_tanHalfFovy;
+	glm::mat4 m_projection;
     // Eular Angles
     float m_yaw;
     float m_pitch;
@@ -74,10 +82,11 @@ public:
     // Returns the view matrix calculated using Eular Angles and the LookAt Matrix
     glm::mat4 getViewMatrix() const;
 	// Returns the projection matrix
-	glm::mat4 getProjection() const;
+	const glm::mat4 &getProjection() const;
 
+	void setScreenSize(int width, int height);
 	//Centre la caméra sur une bounding box
-	void centerOnAABB(const AABB &bBox);
+	void centerOnAABB(const AABB &bBox, const glm::vec3 &dir = glm::vec3(0));
 
     void update(float dt);
 
@@ -90,6 +99,8 @@ public:
 
 	void setMouseOffsetBufferSize(size_t size);
 private:
+	//Calcule la matrice de projection
+	void calcProjection();
     // Calculates the front vector from the Camera's (updated) Eular Angles
     void updateCameraVectors();
 

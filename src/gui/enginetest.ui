@@ -42,7 +42,7 @@
     <item>
      <widget class="GLWidget" name="widget" native="true">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
@@ -55,8 +55,8 @@
       </property>
       <property name="maximumSize">
        <size>
-        <width>800</width>
-        <height>600</height>
+        <width>9999</width>
+        <height>9999</height>
        </size>
       </property>
      </widget>
@@ -83,7 +83,19 @@
     <property name="title">
      <string>Vue</string>
     </property>
+    <widget class="QMenu" name="menuDirection">
+     <property name="title">
+      <string>Direction</string>
+     </property>
+     <addaction name="actionFront"/>
+     <addaction name="actiobBack"/>
+     <addaction name="actionRight"/>
+     <addaction name="actionLeft"/>
+     <addaction name="actionTop"/>
+     <addaction name="actionBottom"/>
+    </widget>
     <addaction name="actionCentrer"/>
+    <addaction name="menuDirection"/>
    </widget>
    <addaction name="menuFichier"/>
    <addaction name="menuVue"/>
@@ -102,6 +114,36 @@
   <action name="actionCentrer">
    <property name="text">
     <string>Centrer</string>
+   </property>
+  </action>
+  <action name="actionFront">
+   <property name="text">
+    <string>Front</string>
+   </property>
+  </action>
+  <action name="actionRight">
+   <property name="text">
+    <string>Right</string>
+   </property>
+  </action>
+  <action name="actionLeft">
+   <property name="text">
+    <string>Left</string>
+   </property>
+  </action>
+  <action name="actiobBack">
+   <property name="text">
+    <string>Back</string>
+   </property>
+  </action>
+  <action name="actionTop">
+   <property name="text">
+    <string>Top</string>
+   </property>
+  </action>
+  <action name="actionBottom">
+   <property name="text">
+    <string>Bottom</string>
    </property>
   </action>
  </widget>

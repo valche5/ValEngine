@@ -15,7 +15,7 @@ public:
 public slots:
 	void openScene();
 	void closeScene();
-	void centerScene();
+	void centerScene(const glm::vec3 &dir = glm::vec3(0));
 
 protected:
 	void initializeGL();
@@ -28,7 +28,6 @@ protected:
 	void mouseReleaseEvent(QMouseEvent *e);
 	void mouseMoveEvent(QMouseEvent *e);
 	void wheelEvent(QWheelEvent *e);
-	void resizeEvent(QResizeEvent *e);
 
 private:
 	std::unique_ptr<Engine> m_engine;
