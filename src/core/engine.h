@@ -3,10 +3,11 @@
 
 #include <memory>
 #include <chrono>
+#include <string>
 
+#include <core/Types.h>
+#include <glm/glm.hpp>
 #include <core/Camera.h>
-
-class Scene;
 
 typedef std::chrono::high_resolution_clock::time_point timepoint;
 
@@ -18,11 +19,10 @@ public:
 	void init();
 	void paint();
 	void resize(int w, int h);
-	void clean();
 
-	Camera *camera();
+	CameraPtr camera();
 
-	void loadDefaultScene();
+	void closeScene();
 	void loadScene(const std::string &path);
 	void centerScene(const glm::vec3 &dir = glm::vec3(0));
 
@@ -36,8 +36,8 @@ private:
 
 	glm::vec3 m_screenSize;
 
-	std::unique_ptr<Scene> m_scene;
-	Camera *m_camera;
+	RendererPtr m_renderer;
+	CameraPtr m_camera;
 };
 
 #endif // !ENGINE_H

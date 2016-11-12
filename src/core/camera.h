@@ -8,10 +8,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <utils/BoundingBox.h>
 
-class Camera;
-
-typedef std::unique_ptr<Camera> CameraPtr;
-
 // Default camera values
 const float YAW        = -90.0f;
 const float PITCH      =  0.0f;
@@ -96,6 +92,7 @@ public:
 	void processMouseRelease();
 	void processMouseMove(int mouseX, int mouseY);
 	void processMouseScroll(float yoffset);
+	void stopMovement();
 
 	void setMouseOffsetBufferSize(size_t size);
 private:

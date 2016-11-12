@@ -8,9 +8,12 @@ using std::endl;
 #include <core/openGL.h>
 #include <core/Camera.h>
 #include <core/ModelLoader.h>
+#include <core/Renderer.h>
+#include <core/Scene.h>
 #include <utils/debugMessage.h>
 
 Engine::Engine()
+	: m_renderer(new Renderer)
 {}
 
 Engine::~Engine()
@@ -47,8 +50,7 @@ void Engine::init()
 		glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
 	}
 
-	//m_scene = ModelLoader::loadScene("data/crysis/nanosuit.obj");
-	loadDefaultScene();
+	m_camera = CameraPtr(new Camera(glm::vec3(0, 0, 5)));
 
 	glViewport(0, 0, 800, 600);
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -71,7 +73,7 @@ void Engine::paint()
 	//Mise à jour caméra
 	m_camera->update(dt/1000);
 	
-	m_scene->render();
+	m_renderer->render();
 }
 
 void Engine::resize(int w, int h)
@@ -82,49 +84,40 @@ void Engine::resize(int w, int h)
 	m_camera->setScreenSize(w, h);
 }
 
-void Engine::clean()
-{
-}
-
-Camera * Engine::camera()
+CameraPtr Engine::camera()
 {
 	return m_camera;
 }
 
-void Engine::loadDefaultScene() {
-	m_scene = ScenePtr(new Scene);
-	m_scene->init();
-	m_camera = m_scene->getCamera();
+void Engine::closeScene() {
+	m_renderer->clearScene();
+	m_camera = CameraPtr(new Camera(glm::vec3(0, 0, 5)));
 }
 
 void Engine::loadScene(const std::string & path) {
-	m_scene = ModelLoader::loadScene(path);
+	try {
+		ScenePtr scene = ModelLoader::loadScene(path);
+		scene->init();
 
-	cout << m_scene->toString() << endl;
+		cout << scene->toString() << endl;
 
-	glm::vec3 center = m_scene->getRootObject()->bBox.getCenter();
-	cout << "Scene Center : (" << center.x << "," << center.y << "," << center.z << ")" << endl;
+		m_camera = scene->getCamera();
+		m_camera->setScreenSize(m_screenSize.x, m_screenSize.y);
 
-	m_camera = m_scene->getCamera();
-	m_camera->setScreenSize(m_screenSize.x, m_screenSize.y);
+		m_renderer->setScene(std::move(scene));
+	} catch (const std::exception &e) {
+		std::cout << "Impossible de charger la scène : " << e.what() << std::endl;
+	}
 
-	m_scene->dirLights.push_back(DirLight());
-	PointLight light(glm::vec3(0, 3, 0));
-	m_scene->pointLights.push_back(light);
-
-	//SpotLight slight;
-	//m_scene->spotLights.push_back(slight);
-
-	m_scene->init();
 }
 
 void Engine::centerScene(const glm::vec3 &dir) {
-	m_camera->centerOnAABB(m_scene->getRootObject()->bBox, dir);
+	m_renderer->centerView(dir);
 }
 
 void Engine::reloadShaders()
 {
-	m_scene->reloadShaders();
+	m_renderer->reloadShaders();
 }
 
 void Engine::setWireframe(bool enable)

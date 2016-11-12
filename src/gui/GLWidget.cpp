@@ -8,6 +8,9 @@
 #include <QFileDialog>
 #include <QSettings>
 
+#include <core/Camera.h>
+#include <core/Engine.h>
+
 GLWidget::GLWidget(QWidget *parent) :
 	QOpenGLWidget(parent)
 {
@@ -48,14 +51,10 @@ void GLWidget::paintGL() {
 }
 
 void GLWidget::keyPressEvent(QKeyEvent *e) {
-	//if (e->isAutoRepeat())
-	//	return QOpenGLWidget::keyPressEvent(e);
-
 	switch (e->key())
 	{
 	case Qt::Key_Escape:
 		QCoreApplication::instance()->quit();
-		m_engine->clean();
 		break;
 		//Wireframe
 	case Qt::Key_W:
@@ -158,6 +157,10 @@ void GLWidget::wheelEvent(QWheelEvent *e) {
 	m_camera->processMouseScroll(e->delta());
 }
 
+void GLWidget::focusOutEvent(QFocusEvent * event) {
+	m_camera->stopMovement();
+}
+
 void GLWidget::openScene() {
 	QSettings settings("ValCompany", "ValRenderer");
 	QString path;
@@ -165,7 +168,6 @@ void GLWidget::openScene() {
 		path = settings.value("scenePath").toString();
 	else
 		path = "./";
-	
 	
 	QString filename = QFileDialog::getOpenFileName(this, "Ouvrir une scène", path, QString("Wavefront Object (*.obj);;"
 		"Collada  (*.dae *.xml);;"
@@ -207,18 +209,20 @@ void GLWidget::openScene() {
 		"TrueSpace (*.cob *.scn);;"
 		"XGL (*.xgl *.zgl)"));
 
-	QFileInfo file(filename);
-	settings.setValue("scenePath", file.absolutePath());
+	if (filename != "") {
+		QFileInfo file(filename);
+		settings.setValue("scenePath", file.absolutePath());
 
-	makeCurrent();
-	m_engine->loadScene(filename.toStdString());
-	m_camera = m_engine->camera();
-	doneCurrent();
+		makeCurrent();
+		m_engine->loadScene(filename.toStdString());
+		m_camera = m_engine->camera();
+		doneCurrent();
+	}
 }
 
 void GLWidget::closeScene() {
 	makeCurrent();
-	m_engine->loadDefaultScene();
+	m_engine->closeScene();
 	m_camera = m_engine->camera();
 	doneCurrent();
 }

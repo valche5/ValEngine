@@ -34,6 +34,7 @@ public:
 	virtual void setUniforms(const std::vector<SpotLight> &sLights) const = 0;
 
 	void use() const { m_program.use(); };
+	void unbind() const { m_program.unbind(); };
 	void reload() { m_program.compile(); fillUniformsLoc(m_program, m_configuration); };
 
 	ShaderConfiguration configuration() const {
@@ -134,6 +135,7 @@ private:
 	GLuint m_uKd;
 	GLuint m_uKs;
 	GLuint m_uShininess;
+	GLuint m_uNormalMap;
 
 	//Fragment Shader : Lights
 	std::vector<uPointLight> m_uPointLights;

@@ -22,6 +22,7 @@ public:
 	void compile() const;
 
 	void use() const;
+	void unbind() const;
 
 	template<typename T>
 	void setUniform(const std::string &loc, T value) const {

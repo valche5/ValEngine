@@ -32,6 +32,9 @@ public:
 	//Material
 	Material material;
 
+	//Model
+	glm::mat4 model;
+
 	//Bounding Box
 	AABB bBox;
 protected:

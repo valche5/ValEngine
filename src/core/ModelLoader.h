@@ -15,8 +15,8 @@ class ModelLoader {
 public:
 	static ScenePtr loadScene(const std::string &path);
 private:
-	static void processNode(const aiScene *aiscene, ScenePtr &scene, aiNode* node, SceneObject *object);
-	static void processMesh(const aiScene *aiscene, ScenePtr &scene, aiMesh* mesh, MeshPtr &glMesh);
+	static void processNode(const aiScene *aiscene, ScenePtr &scene, aiNode* node, SceneObjectPtr &object, glm::mat4 accTransform);
+	static void processMesh(const aiScene *aiscene, ScenePtr &scene, aiMesh* mesh, MeshPtr &glMesh, const glm::mat4 &model);
 	static void loadTextures(ScenePtr &scene, aiMaterial* mat, MeshPtr &glMesh, aiTextureType aitype, TextureType type);
 
 	static void computeAABB(aiMesh *mesh, AABB &bBox);

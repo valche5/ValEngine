@@ -12,8 +12,11 @@ struct ShaderConfiguration {
 	std::string shadingType;
 	std::string lightingFct;
 	TextureTypes textureTypes;
-	operator std::string() {
+	std::string toString() const {
 		return shadingType + lightingFct + textureTypes;
+	}
+	operator std::string() const {
+		return toString();
 	}
 	friend bool operator<(const ShaderConfiguration &l, const ShaderConfiguration &r) {
 		if (l.lightingFct < r.lightingFct && l.shadingType < r.shadingType && l.textureTypes < r.textureTypes) {

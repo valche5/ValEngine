@@ -174,6 +174,7 @@
     <ClCompile Include="src\core\Mesh.cpp" />
     <ClCompile Include="src\core\ModelLoader.cpp" />
     <ClCompile Include="src\core\MeshShader.cpp" />
+    <ClCompile Include="src\core\Renderer.cpp" />
     <ClCompile Include="src\core\Scene.cpp" />
     <ClCompile Include="src\core\SceneObject.cpp" />
     <ClCompile Include="src\core\VBOFactory.cpp" />
@@ -239,6 +240,7 @@
     <ClInclude Include="src\core\ModelLoader.h" />
     <ClInclude Include="src\core\openGL.h" />
     <ClInclude Include="src\core\MeshShader.h" />
+    <ClInclude Include="src\core\Renderer.h" />
     <ClInclude Include="src\core\Scene.h" />
     <ClInclude Include="src\core\SceneObject.h" />
     <ClInclude Include="src\core\ShaderConfiguration.h" />

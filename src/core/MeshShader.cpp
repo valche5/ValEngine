@@ -77,6 +77,13 @@ void LightingShader::setUniforms(const Material &mat) const {
 		m_program.setUniform(m_uKs, mat.getProperty<glm::vec3>(Ks));
 	}
 
+	if (mat.textureTypes & Normal) {
+		glActiveTexture(GL_TEXTURE0 + textureCount);
+		m_program.setUniform(m_uNormalMap, textureCount);
+		mat.getTexture(Normal)->bind();
+		textureCount++;
+	}
+
 	if (textureCount > 0) {
 		glActiveTexture(GL_TEXTURE0);
 	}
@@ -156,6 +163,8 @@ void LightingShader::loadShaders(gl::ShaderPtr vertex, gl::ShaderPtr fragment, c
 		defines.push_back("DIFFUSE_MAP");
 	if (configuration.textureTypes & Specular)
 		defines.push_back("SPECULAR_MAP");
+	if (configuration.textureTypes & Normal)
+		defines.push_back("NORMAL_MAP");
 
 	fragment->setDefines(defines);
 }
@@ -182,6 +191,8 @@ void LightingShader::fillUniformsLoc(gl::ShaderProgram &program, const ShaderCon
 		m_uKs = program.getUniformLoc("specular");
 	else
 		m_uKs = program.getUniformLoc("ks");
+	if (configuration.textureTypes & Normal)
+		m_uNormalMap = program.getUniformLoc("normalMap");
 
 	m_uShininess = program.getUniformLoc("shininess");
 

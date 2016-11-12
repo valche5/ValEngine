@@ -6,5 +6,7 @@
 
 std::ostream &operator<<(std::ostream &stream, const glm::vec3 &vec3);
 
+std::string toString(const glm::vec3 &vec3);
+
 #endif // GLMSTREAMS_H
 

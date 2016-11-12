@@ -67,6 +67,10 @@ uniform sampler2D specular;
 uniform vec3 ks;
 #endif
 
+#ifdef NORMAL_MAP
+uniform sampler2D normalMap;
+#endif
+
 uniform float shininess;
 
 //Light uniforms
@@ -86,6 +90,7 @@ uniform vec3 viewPos;
 in vec3 Normal;
 in vec3 FragPos;
 in vec2 TexCoords;
+in mat3 TBN;
 
 out vec4 color;
 
@@ -93,7 +98,15 @@ vec3 calcLight(vec3 normal, vec3 viewDir, vec3 lightDir, Light light, Material m
 
 void main()
 {
+#ifdef NORMAL_MAP
+	vec3 norm = texture(normalMap, TexCoords).rgb;
+	norm = normalize(norm * 2.0 - 1.0);
+	norm = normalize(TBN * norm);
+#else
 	vec3 norm = normalize(Normal);
+#endif
+	//norm = normalize(Normal);
+
     vec3 viewDir = normalize(viewPos - FragPos);
 
 	Light light;

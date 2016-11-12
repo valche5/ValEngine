@@ -2,8 +2,9 @@
 #define GLWIDGET_H
 
 #include <qopenglwidget.h>
-#include "../core/engine.h"
-#include "../core/camera.h"
+
+#include <core/Types.h>
+#include <glm/glm.hpp>
 
 class Camera;
 
@@ -28,10 +29,11 @@ protected:
 	void mouseReleaseEvent(QMouseEvent *e);
 	void mouseMoveEvent(QMouseEvent *e);
 	void wheelEvent(QWheelEvent *e);
+	void focusOutEvent(QFocusEvent *event);
 
 private:
-	std::unique_ptr<Engine> m_engine;
-	Camera *m_camera;
+	EnginePtr m_engine;
+	CameraPtr m_camera;
 
 	bool m_wireframe;
 };

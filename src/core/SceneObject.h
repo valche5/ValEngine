@@ -19,7 +19,7 @@ typedef std::unique_ptr<SceneObject> SceneObjectPtr;
 
 class SceneObject {
 public:
-	SceneObject *createChild();
+	SceneObjectPtr &createChild();
 
 	void translate(glm::vec3 translation);
 	void scale(glm::vec3 scaling);

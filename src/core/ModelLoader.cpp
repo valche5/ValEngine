@@ -3,6 +3,7 @@
 #include <core/Mesh.h>
 #include <core/VBOFactory.h>
 #include <core/IBOFactory.h>
+#include <exception>
 
 using std::cout;
 using std::endl;
@@ -12,11 +13,14 @@ std::string ModelLoader::m_directory = "";
 ScenePtr ModelLoader::loadScene(const std::string & path) {
 	//Création de la scène
 	ScenePtr scene(new Scene);
-	SceneObject *rootObject = scene->getRootObject();
+	SceneObjectPtr &rootObject = scene->getRootObject();
 
 	//Chargement du modèle dans assimp
 	Assimp::Importer importer;
-	const aiScene *aiScene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+	const aiScene *aiScene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+	if (!aiScene) {
+		throw std::runtime_error(importer.GetErrorString());
+	}
 	importer.ApplyPostProcessing(aiProcess_GenNormals);
 
 	if (!aiScene || aiScene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !aiScene->mRootNode) {
@@ -25,50 +29,51 @@ ScenePtr ModelLoader::loadScene(const std::string & path) {
 	}
 	m_directory = path.substr(0, path.find_last_of('/'));
 
-	processNode(aiScene, scene, aiScene->mRootNode, rootObject);
-	scene->setReady(true);
+	processNode(aiScene, scene, aiScene->mRootNode, rootObject, glm::mat4());
 
 	importer.FreeScene();
 	return std::move(scene);
 }
 
-void ModelLoader::processNode(const aiScene *aiscene, ScenePtr &scene, aiNode * node, SceneObject *object) {
+void ModelLoader::processNode(const aiScene *aiscene, ScenePtr &scene, aiNode * node, SceneObjectPtr &object, glm::mat4 accTransform) {
+	//Transform
+	object->transform = aiToGLM(node->mTransformation);
+	accTransform = accTransform * object->transform;
+	//Name
+	object->name = node->mName.C_Str();
 	//Mesh
 	object->meshes.reserve(node->mNumMeshes);
 	for (int i = 0; i < node->mNumMeshes; i++) {
 		aiMesh *mesh = aiscene->mMeshes[node->mMeshes[i]];
 		object->meshes.push_back(MeshPtr(new ModelMesh));
-		processMesh(aiscene, scene, mesh, object->meshes.back());
+		processMesh(aiscene, scene, mesh, object->meshes.back(), accTransform);
 
 		//Bounding box
 		object->bBox.fitWithAddingBbox(object->meshes.back()->bBox);
 	}
-	//Transform
-	object->transform = aiToGLM(node->mTransformation);
-	//Name
-	object->name = node->mName.C_Str();
 
 	//Children
 	for (int i = 0; i < node->mNumChildren; i++) {
 		//Création d'un enfant
-		SceneObject *newObject = object->createChild();
+		SceneObjectPtr &newObject = object->createChild();
 		//Parent
-		newObject->parent = object;
+		newObject->parent = object.get();
 		newObject->scene = scene.get();
 
-		processNode(aiscene, scene, node->mChildren[i], newObject);
+		processNode(aiscene, scene, node->mChildren[i], newObject, accTransform);
 
 		//Bounding Box
 		object->bBox.fitWithAddingBbox(newObject->bBox);
 	}
 }
 
-void ModelLoader::processMesh(const aiScene *aiscene, ScenePtr &scene, aiMesh * mesh, MeshPtr &glMesh) {
+void ModelLoader::processMesh(const aiScene *aiscene, ScenePtr &scene, aiMesh * mesh, MeshPtr &glMesh, const glm::mat4 &model) {
 	//Properties
 	glMesh->shaderConf.shadingType = "lighting";
 	glMesh->shaderConf.lightingFct = "phong";
 	glMesh->name = mesh->mName.C_Str();
 	glMesh->vertexCount = mesh->mNumVertices;
+	glMesh->model = model;
 
 	//Vertex geometry
 	VBOFactory vboFactory;
@@ -80,6 +85,11 @@ void ModelLoader::processMesh(const aiScene *aiscene, ScenePtr &scene, aiMesh * 
 	//Normals
 	if (mesh->HasNormals()) {
 		vboFactory.setData(VertexNormal, &mesh->mNormals[0][0]);
+	}
+
+	if (mesh->HasTangentsAndBitangents()) {
+		vboFactory.setData(VertexTangent, &mesh->mTangents[0][0]);
+		vboFactory.setData(VertexBitangent, &mesh->mBitangents[0][0]);
 	}
 
 	//Texture coords

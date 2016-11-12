@@ -21,39 +21,24 @@ public:
 	void render();
 
 public:
-	SceneObject *getRootObject();
-	Camera *getCamera();
-	void reloadShaders();
+	SceneObjectPtr &getRootObject();
+	CameraPtr getCamera();
 
-	void centerCamera();
-
-	std::string toString() {
-		return rootObject->toString();
-	}
-
-	void setReady(bool ready);
+	std::string toString();
 
 	std::unordered_map<std::string, gl::TexturePtr> textures;
 	std::vector<PointLight> pointLights;
 	std::vector<DirLight> dirLights;
 	std::vector<SpotLight> spotLights;
-private:
-	void computeShaders();
-	void computeShaders(const SceneObjectPtr &node);
 
 	void renderAABB(const SceneObjectPtr &node, const gl::ShaderProgram &program, glm::mat4 accTransform);
-	void renderNode(const SceneObjectPtr &node, const MeshShaderPtr &shader, const ShaderConfiguration &configuration, glm::mat4 accTransform);
 private:
 	SceneObjectPtr rootObject;
 	CameraPtr m_camera;
 
-	bool m_ready = false;
-
-	std::unordered_map<std::string, MeshShaderPtr> shaders;
-
 	ArrowMesh m_arrow;
 	AABBMesh m_aabb;
-	gl::ShaderProgram m_arrowShader;
+	//gl::ShaderProgram m_arrowShader;
 };
 
 #endif // !SCENE_H

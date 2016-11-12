@@ -95,7 +95,7 @@ void Camera::centerOnAABB(const AABB & bBox, const glm::vec3 &dir) {
 	m_movementSpeed = camRadius / 3.f;
 
 
-	std::cout << "Camera position : " << camPos << std::endl;
+	//std::cout << "Camera position : " << camPos << std::endl;
 }
 
 void Camera::update(float dt)
@@ -265,7 +265,6 @@ void Camera::processMouseMove(int mouseX, int mouseY)
 }
 
 void Camera::processMouseScroll(float yoffset) {
-	//std::cout << "Zoom: " << m_zoom << ", delta: " << delta << std::endl;
 	if (m_zoom >= 1.0f && m_zoom <= 19.0f)
 		m_zoom += yoffset * std::log((21.0f - m_zoom))  * 0.001;
 	if (m_zoom <= 1.0f)
@@ -276,6 +275,10 @@ void Camera::processMouseScroll(float yoffset) {
 	calcProjection();
 }
 
+void Camera::stopMovement() {
+	m_direction = Camera::NONE;
+}
+
 void Camera::setMouseOffsetBufferSize(size_t size) {
 	m_bufferSize = size;
 	initOffsetBuffer();
@@ -284,7 +287,6 @@ void Camera::setMouseOffsetBufferSize(size_t size) {
 // Calculates the front vector from the Camera's (updated) Eular Angles
 void Camera::updateCameraVectors()
 {
-	std::cout << "yaw: " << m_yaw << ", pitch" << m_pitch << std::endl;
     // Calculate the new Front vector
     glm::vec3 front;
     front.x = cos(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));

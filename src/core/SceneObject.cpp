@@ -5,10 +5,10 @@
 #include <utils/glmstreams.h>
 #include <glw/Texture.h>
 
-SceneObject *SceneObject::createChild()
+SceneObjectPtr &SceneObject::createChild()
 {
 	childs.push_back(SceneObjectPtr(new SceneObject));
-	return childs.back().get();
+	return childs.back();
 }
 
 void SceneObject::translate(glm::vec3 translation) {

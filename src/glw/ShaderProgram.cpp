@@ -35,6 +35,10 @@ void ShaderProgram::use() const {
 	glUseProgram(m_id);
 }
 
+void ShaderProgram::unbind() const {
+	glUseProgram(0);
+}
+
 void ShaderProgram::setUniform(GLuint loc, glm::vec3 u3f) const {
 	glUniform3f(loc, u3f.x, u3f.y, u3f.z);
 }
